@@ -4,7 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>招商港融 · 港口数字化运营平台建设总体方案</title>
+  <title>招商港融 · 履约中心与运营管理数据中心建设方案</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Noto+Sans+SC:wght@300;400;500;700;900&amp;display=swap"
+    rel="stylesheet">
+  <link rel="preload" as="image" href="images/hero-port.png">
   <style>
     /* ========== CSS Variables & Design Tokens ========== */
     :root {
@@ -43,7 +49,7 @@
       box-sizing: border-box;
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+    /* Google Fonts loaded via link tag in head */
 
     html {
       scroll-behavior: smooth;
@@ -56,6 +62,103 @@
       color: var(--text-primary);
       line-height: 1.8;
       overflow-x: hidden;
+    }
+
+    ::selection {
+      color: #fff;
+      background: rgba(77, 163, 255, 0.72);
+      text-shadow: 0 0 18px rgba(104, 182, 255, 0.95);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--sunset-gold);
+      outline-offset: 4px;
+    }
+
+    .reading-progress {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      z-index: 1002;
+      pointer-events: none;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .reading-progress span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(0);
+      transform-origin: left center;
+      background: linear-gradient(90deg, var(--harbor-light), var(--success-green), var(--sunset-gold));
+      box-shadow: 0 0 14px rgba(77, 163, 255, 0.65);
+      transition: transform 0.12s linear;
+    }
+
+    .cursor-orb,
+    .cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10000;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0);
+    }
+
+    .cursor-orb {
+      width: 7px;
+      height: 7px;
+      background: var(--harbor-glow);
+      box-shadow: 0 0 18px rgba(104, 182, 255, 0.9);
+    }
+
+    .cursor-ring {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(104, 182, 255, 0.55);
+      background: rgba(77, 163, 255, 0.04);
+      transition: width 0.2s, height 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    body.pointer-ready .cursor-orb,
+    body.pointer-ready .cursor-ring {
+      opacity: 1;
+    }
+
+    body.pointer-over-action .cursor-ring {
+      width: 48px;
+      height: 48px;
+      border-color: rgba(252, 191, 73, 0.8);
+      background: rgba(252, 191, 73, 0.08);
+    }
+
+    .selection-flare {
+      position: fixed;
+      width: 22px;
+      height: 22px;
+      z-index: 10001;
+      border: 1px solid rgba(252, 191, 73, 0.85);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: selectionFlare 0.8s var(--transition-smooth) forwards;
+    }
+
+    @keyframes selectionFlare {
+      0% {
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(0.35);
+        box-shadow: 0 0 0 0 rgba(252, 191, 73, 0.45);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.8);
+        box-shadow: 0 0 0 14px rgba(77, 163, 255, 0);
+      }
     }
 
     /* ========== Animated Ocean Background ========== */
@@ -218,6 +321,123 @@
       border-radius: 2px;
     }
 
+    .page-dock {
+      position: fixed;
+      right: 24px;
+      top: 96px;
+      z-index: 980;
+      display: grid;
+      grid-template-columns: 38px minmax(126px, auto) 38px;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid rgba(77, 163, 255, 0.2);
+      border-radius: 16px;
+      background: rgba(6, 14, 26, 0.8);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .page-dock:hover {
+      border-color: rgba(77, 163, 255, 0.42);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35), 0 0 28px rgba(77, 163, 255, 0.09);
+    }
+
+    .page-dock button {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 10px;
+      color: var(--text-primary);
+      background: rgba(77, 163, 255, 0.11);
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.25s, color 0.25s, background 0.25s;
+    }
+
+    .page-dock button:hover:not(:disabled) {
+      color: var(--sunset-gold);
+      background: rgba(252, 191, 73, 0.12);
+      transform: scale(1.08);
+    }
+
+    .page-dock button:disabled {
+      opacity: 0.28;
+      cursor: not-allowed;
+    }
+
+    .page-dock-copy {
+      min-width: 0;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .page-dock-count {
+      display: block;
+      color: var(--harbor-light);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .page-dock-title {
+      display: block;
+      max-width: 170px;
+      margin-top: 4px;
+      overflow: hidden;
+      color: var(--text-secondary);
+      font-size: 11px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .page-dock-hint {
+      position: absolute;
+      right: 8px;
+      top: calc(100% + 8px);
+      color: var(--text-muted);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .audience-fullscreen-button {
+      display: none;
+      position: fixed;
+      right: 24px;
+      bottom: 22px;
+      z-index: 1200;
+      padding: 10px 16px;
+      border: 1px solid rgba(77, 163, 255, 0.3);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      background: rgba(6, 14, 26, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      cursor: pointer;
+      font: 600 12px var(--font-body);
+      transition: color 0.25s, border-color 0.25s, background 0.25s;
+    }
+
+    body.audience-mode .page-dock {
+      display: none;
+    }
+
+    body.audience-mode .audience-fullscreen-button {
+      display: block;
+    }
+
+    body.audience-mode.is-fullscreen .audience-fullscreen-button {
+      display: none;
+    }
+
+    .audience-fullscreen-button:hover {
+      color: var(--text-primary);
+      border-color: rgba(252, 191, 73, 0.5);
+      background: rgba(15, 40, 71, 0.9);
+    }
+
     /* ========== Hero Section ========== */
     .hero {
       min-height: 100vh;
@@ -234,6 +454,94 @@
       max-width: 900px;
       position: relative;
       z-index: 2;
+    }
+
+    /* Photo-led cover: remove the class from #hero to restore the original illustrated cover. */
+    .hero.hero-port-cover {
+      justify-content: flex-start;
+      isolation: isolate;
+      background-color: #071421;
+      background-image:
+        linear-gradient(90deg, rgba(3, 11, 20, 0.98) 0%, rgba(4, 15, 26, 0.91) 28%, rgba(6, 22, 37, 0.68) 49%, rgba(6, 22, 37, 0.18) 73%, rgba(3, 11, 20, 0.34) 100%),
+        linear-gradient(180deg, rgba(3, 11, 20, 0.24) 0%, rgba(3, 11, 20, 0.04) 46%, rgba(3, 11, 20, 0.62) 100%),
+        url('images/hero-port.png');
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    .hero.hero-port-cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 22% 43%, rgba(77, 163, 255, 0.12), transparent 38%),
+        linear-gradient(90deg, rgba(10, 22, 40, 0.12), transparent 58%);
+    }
+
+    .hero-port-cover .hero-content {
+      width: min(760px, 58vw);
+      max-width: 760px;
+      margin-left: max(0px, calc((100vw - 1480px) / 2));
+      text-align: left;
+    }
+
+    .hero-port-cover .hero-badge {
+      border-color: rgba(104, 182, 255, 0.38);
+      background: rgba(5, 18, 31, 0.58);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .hero-port-cover h1 {
+      max-width: 750px;
+      font-size: clamp(40px, 4.25vw, 62px);
+      text-shadow: 0 6px 34px rgba(0, 0, 0, 0.72);
+    }
+
+    .hero-port-cover .hero-subtitle {
+      max-width: 690px;
+      margin: 0 0 42px;
+      color: #c0cee0;
+      text-shadow: 0 3px 22px rgba(0, 0, 0, 0.85);
+    }
+
+    .hero-port-cover .hero-stats {
+      max-width: 710px;
+      justify-content: flex-start;
+      gap: 0;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.13);
+    }
+
+    .hero-port-cover .hero-stat {
+      min-width: 138px;
+      padding: 0 24px;
+      border-left: 1px solid rgba(255, 255, 255, 0.11);
+      text-align: left;
+    }
+
+    .hero-port-cover .hero-stat:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .hero-port-cover .hero-stat .number {
+      font-size: 36px;
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.72);
+    }
+
+    .hero-port-cover .hero-stat .label {
+      color: #91a8c2;
+    }
+
+    .hero-port-cover .ship-track,
+    .hero-port-cover .wave-container,
+    .hero-port-cover .cranes {
+      display: none;
     }
 
     .hero-badge {
@@ -466,7 +774,7 @@
 
     /* ========== Cards ========== */
     .card {
-      background: var(--card-bg);
+      background: radial-gradient(360px circle at var(--pointer-x) var(--pointer-y), var(--card-spotlight), transparent 52%), var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-md);
       padding: 36px;
@@ -475,6 +783,9 @@
       transition: all 0.4s var(--transition-smooth);
       position: relative;
       overflow: hidden;
+      --pointer-x: 50%;
+      --pointer-y: 50%;
+      --card-spotlight: rgba(77, 163, 255, 0);
     }
 
     .card::before {
@@ -493,10 +804,59 @@
       border-color: rgba(77, 163, 255, 0.3);
       transform: translateY(-4px);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(77, 163, 255, 0.08);
+      --card-spotlight: rgba(77, 163, 255, 0.11);
     }
 
     .card:hover::before {
       opacity: 1;
+    }
+
+    .interaction-ripple {
+      position: absolute;
+      z-index: 5;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0%, rgba(77, 163, 255, 0.42) 38%, transparent 70%);
+      animation: interactionRipple 0.65s var(--transition-smooth) forwards;
+    }
+
+    .flow-tab,
+    .scenario-nav-item,
+    .page-dock button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes interactionRipple {
+      from {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(0.2);
+      }
+
+      to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(12);
+      }
+    }
+
+    .section.section-focus .section-header {
+      animation: sectionFocus 0.65s var(--transition-smooth);
+    }
+
+    @keyframes sectionFocus {
+      0% {
+        filter: brightness(1);
+      }
+
+      45% {
+        filter: brightness(1.3) drop-shadow(0 0 22px rgba(77, 163, 255, 0.18));
+      }
+
+      100% {
+        filter: brightness(1);
+      }
     }
 
     /* ========== Section: Background ========== */
@@ -757,7 +1117,7 @@
 
     .fulfillment-lanes {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
       margin-top: 32px;
     }
@@ -775,6 +1135,52 @@
       font-size: 13px;
       color: var(--text-secondary);
       line-height: 1.75;
+    }
+
+    .capability-boundary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .boundary-step {
+      position: relative;
+      padding: 22px 22px 20px 54px;
+      border: 1px solid rgba(77, 163, 255, 0.16);
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(77, 163, 255, 0.07), rgba(255, 255, 255, 0.02));
+    }
+
+    .boundary-step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      z-index: 3;
+      color: var(--sunset-gold);
+      font-weight: 800;
+      transform: translateY(-50%);
+    }
+
+    .boundary-step-no {
+      position: absolute;
+      left: 18px;
+      top: 20px;
+      color: var(--harbor-light);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .boundary-step h4 {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .boundary-step p {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.65;
     }
 
     /* ========== Section: Four Goals ========== */
@@ -1034,6 +1440,124 @@
       color: var(--harbor-light);
       backdrop-filter: blur(6px);
       border: 1px solid var(--card-border);
+    }
+
+    .solution-architecture {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      position: relative;
+    }
+
+    .solution-layer {
+      position: relative;
+      min-height: 288px;
+      padding: 28px 22px;
+      border: 1px solid rgba(77, 163, 255, 0.18);
+      border-radius: 18px;
+      background: linear-gradient(160deg, rgba(20, 58, 102, 0.72), rgba(10, 22, 40, 0.78));
+      overflow: visible;
+      transition: transform 0.35s var(--transition-smooth), border-color 0.35s, box-shadow 0.35s;
+      --pointer-x: 50%;
+      --pointer-y: 50%;
+    }
+
+    .solution-layer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(260px circle at var(--pointer-x) var(--pointer-y), rgba(104, 182, 255, 0.14), transparent 55%);
+      transition: opacity 0.3s;
+    }
+
+    .solution-layer:hover {
+      z-index: 2;
+      border-color: rgba(77, 163, 255, 0.48);
+      transform: translateY(-7px);
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.28), 0 0 26px rgba(77, 163, 255, 0.09);
+    }
+
+    .solution-layer:hover::before {
+      opacity: 1;
+    }
+
+    .solution-layer:not(:last-child)::after {
+      content: '›';
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      z-index: 4;
+      color: var(--sunset-gold);
+      font-size: 30px;
+      font-weight: 300;
+      transform: translateY(-50%);
+    }
+
+    .solution-layer>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .solution-layer-no {
+      display: block;
+      margin-bottom: 16px;
+      color: var(--harbor-light);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .solution-layer h4 {
+      margin-bottom: 10px;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .solution-layer p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .solution-layer ul {
+      display: grid;
+      gap: 7px;
+      list-style: none;
+    }
+
+    .solution-layer li {
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .solution-layer li::before {
+      content: '·';
+      margin-right: 7px;
+      color: var(--success-green);
+      font-weight: 900;
+    }
+
+    .architecture-loop {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 22px;
+      padding: 13px 18px;
+      border: 1px solid rgba(46, 196, 182, 0.16);
+      border-radius: 100px;
+      color: var(--text-secondary);
+      background: rgba(46, 196, 182, 0.05);
+      font-size: 12px;
+    }
+
+    .architecture-loop strong {
+      color: var(--success-green);
     }
 
     /* ========== 四步流程卡片 ========== */
@@ -1442,8 +1966,8 @@
 
     .toolchain-route {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
       margin: 30px 0;
     }
 
@@ -1457,7 +1981,7 @@
       position: relative;
     }
 
-    .tool-route-item:not(:last-child)::after {
+    .tool-route-item:not(:nth-child(4)):not(:last-child)::after {
       content: '›';
       position: absolute;
       right: -9px;
@@ -1465,6 +1989,18 @@
       z-index: 2;
       color: var(--sunset-gold);
       font-size: 24px;
+      font-weight: 800;
+    }
+
+    .tool-route-item:nth-child(4)::after {
+      content: '↓';
+      position: absolute;
+      right: 50%;
+      bottom: -25px;
+      z-index: 2;
+      transform: translateX(50%);
+      color: var(--sunset-gold);
+      font-size: 22px;
       font-weight: 800;
     }
 
@@ -1781,6 +2317,418 @@
       color: var(--harbor-light);
     }
 
+    /* ========== Application Scenarios: Chapter 6 ========== */
+    .scene-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      margin-bottom: 15px;
+      border-radius: 999px;
+      color: var(--harbor-light);
+      background: rgba(26, 115, 232, 0.12);
+      border: 1px solid rgba(77, 163, 255, 0.2);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .trace-chain,
+    .confirmation-flow,
+    .settlement-flow,
+    .exception-flow,
+    .operation-cycle {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      margin: 22px 0;
+    }
+
+    .trace-step,
+    .confirmation-step,
+    .settlement-step,
+    .exception-step,
+    .operation-step {
+      flex: 1;
+      min-width: 0;
+      padding: 15px 10px;
+      border-radius: 11px;
+      background: rgba(15, 40, 71, 0.58);
+      border: 1px solid var(--card-border);
+      text-align: center;
+      transition: transform 0.3s var(--transition-smooth), border-color 0.3s, background 0.3s;
+    }
+
+    .trace-step:hover,
+    .confirmation-step:hover,
+    .settlement-step:hover,
+    .exception-step:hover,
+    .operation-step:hover {
+      transform: translateY(-5px);
+      border-color: rgba(77, 163, 255, 0.38);
+      background: rgba(26, 115, 232, 0.09);
+    }
+
+    .trace-step b,
+    .confirmation-step b,
+    .settlement-step b,
+    .exception-step b,
+    .operation-step b {
+      display: block;
+      color: var(--text-primary);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .trace-step span,
+    .confirmation-step span,
+    .settlement-step span,
+    .exception-step span,
+    .operation-step span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .flow-chevron {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      color: var(--sunset-gold);
+      font-weight: 800;
+      opacity: 0.75;
+    }
+
+    .scene-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .scene-kpi {
+      padding: 16px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.026);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .scene-kpi strong {
+      display: block;
+      color: var(--harbor-light);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .scene-kpi span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .field-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 16px;
+    }
+
+    .field-chip {
+      padding: 5px 9px;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      background: rgba(77, 163, 255, 0.055);
+      border: 1px solid rgba(77, 163, 255, 0.12);
+      font-size: 10px;
+    }
+
+    .verification-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 11px;
+      margin: 20px 0;
+    }
+
+    .verification-card {
+      padding: 17px 14px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .verification-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(46, 196, 182, 0.32);
+    }
+
+    .verification-card b {
+      display: block;
+      color: var(--success-green);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .verification-card span {
+      color: var(--text-muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .scenario-panel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .scenario-mini-card {
+      padding: 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .scenario-mini-card h4 {
+      color: var(--sunset-gold);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .scenario-mini-card p {
+      color: var(--text-secondary);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .settlement-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .settlement-summary .card {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .settlement-summary strong {
+      display: block;
+      color: var(--sunset-gold);
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .settlement-summary span {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .exception-matrix td:first-child {
+      width: 17%;
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .exception-matrix td:nth-child(2) {
+      width: 52%;
+    }
+
+    .exception-matrix td:nth-child(3) {
+      color: var(--success-green);
+    }
+
+    .exception-note-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .exception-note {
+      padding: 20px 22px;
+      border-radius: 12px;
+      background: rgba(230, 57, 70, 0.045);
+      border: 1px solid rgba(230, 57, 70, 0.14);
+      color: var(--text-secondary);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .exception-note strong {
+      color: #ff7a87;
+    }
+
+    .horizon-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .horizon-card {
+      padding: 26px;
+      border-top: 3px solid var(--harbor-light);
+    }
+
+    .horizon-card:nth-child(2) {
+      border-top-color: var(--sunset-gold);
+    }
+
+    .horizon-card:nth-child(3) {
+      border-top-color: var(--success-green);
+    }
+
+    .horizon-label {
+      display: inline-flex;
+      padding: 4px 10px;
+      margin-bottom: 13px;
+      border-radius: 999px;
+      color: var(--harbor-light);
+      background: rgba(77, 163, 255, 0.1);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .horizon-card:nth-child(2) .horizon-label {
+      color: var(--sunset-gold);
+      background: rgba(252, 191, 73, 0.1);
+    }
+
+    .horizon-card:nth-child(3) .horizon-label {
+      color: var(--success-green);
+      background: rgba(46, 196, 182, 0.1);
+    }
+
+    .horizon-card h3 {
+      font-size: 17px;
+      margin-bottom: 10px;
+    }
+
+    .horizon-card p,
+    .horizon-card li {
+      color: var(--text-secondary);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .horizon-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .horizon-card li {
+      position: relative;
+      padding: 4px 0 4px 14px;
+    }
+
+    .horizon-card li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--harbor-light);
+    }
+
+    .operation-cycle {
+      margin: 20px 0 26px;
+    }
+
+    .operation-step {
+      padding: 13px 8px;
+    }
+
+    .joint-mgmt-intro.compact {
+      padding: 28px 32px;
+      margin-bottom: 20px;
+    }
+
+    .joint-mgmt-intro.compact p {
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .joint-mgmt-grid.compact {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 0;
+    }
+
+    .joint-mgmt-grid.compact .joint-mgmt-card {
+      padding: 24px;
+    }
+
+    .joint-mgmt-grid.compact .jm-icon {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 12px;
+      font-size: 21px;
+    }
+
+    .joint-mgmt-grid.compact .joint-mgmt-card h4 {
+      font-size: 15px;
+    }
+
+    .joint-mgmt-grid.compact .joint-mgmt-card ul li {
+      font-size: 11px;
+      line-height: 1.55;
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+
+    @media (max-width: 1100px) {
+      .verification-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .joint-mgmt-grid.compact {
+        grid-template-columns: 1fr;
+      }
+
+      .trace-chain,
+      .confirmation-flow,
+      .settlement-flow,
+      .exception-flow,
+      .operation-cycle {
+        flex-wrap: wrap;
+      }
+
+      .flow-chevron {
+        display: none;
+      }
+
+      .trace-step,
+      .confirmation-step,
+      .settlement-step,
+      .exception-step,
+      .operation-step {
+        flex: 1 1 28%;
+      }
+    }
+
+    @media (max-width: 760px) {
+
+      .scene-kpi-strip,
+      .verification-grid,
+      .scenario-panel-grid,
+      .settlement-summary,
+      .exception-note-grid,
+      .horizon-grid,
+      .joint-mgmt-grid.compact {
+        grid-template-columns: 1fr;
+      }
+
+      .trace-step,
+      .confirmation-step,
+      .settlement-step,
+      .exception-step,
+      .operation-step {
+        flex-basis: 45%;
+      }
+    }
+
     /* ========== Section: Data Asset Project ========== */
     .data-asset-overview {
       display: grid;
@@ -1965,6 +2913,247 @@
       color: var(--sunset-gold);
     }
 
+    /* ========== Implementation Path: Monthly Milestones ========== */
+    .implementation-strategy {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .strategy-rail {
+      position: relative;
+      overflow: hidden;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .strategy-rail::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--harbor-light), transparent 82%);
+    }
+
+    .strategy-rail:nth-child(2)::after {
+      background: linear-gradient(90deg, var(--sunset-gold), transparent 82%);
+    }
+
+    .strategy-no {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--harbor-light);
+      background: rgba(26, 115, 232, 0.14);
+      border: 1px solid rgba(77, 163, 255, 0.24);
+    }
+
+    .strategy-rail:nth-child(2) .strategy-no {
+      color: var(--sunset-gold);
+      background: rgba(252, 191, 73, 0.12);
+      border-color: rgba(252, 191, 73, 0.22);
+    }
+
+    .strategy-rail h3 {
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .strategy-rail p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .milestone-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    .milestone-heading h3 {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .milestone-heading p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .milestone-hint {
+      flex-shrink: 0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: var(--harbor-light);
+      background: rgba(26, 115, 232, 0.1);
+      border: 1px solid rgba(77, 163, 255, 0.2);
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .month-card {
+      --stage-color: var(--harbor-light);
+      min-height: 148px;
+      padding: 17px 18px 15px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      border-top: 3px solid var(--stage-color);
+      transition: transform 0.35s var(--transition-smooth), border-color 0.35s, box-shadow 0.35s, background 0.35s;
+    }
+
+    .month-card[data-stage="2"] {
+      --stage-color: var(--sunset-orange);
+    }
+
+    .month-card[data-stage="3"] {
+      --stage-color: var(--sunset-gold);
+    }
+
+    .month-card[data-stage="4"] {
+      --stage-color: var(--success-green);
+    }
+
+    .month-card:hover,
+    .month-card.selected {
+      transform: translateY(-6px);
+      border-color: var(--stage-color);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28), 0 0 0 1px color-mix(in srgb, var(--stage-color) 35%, transparent);
+    }
+
+    .month-card.selected::after {
+      content: '已选中';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ocean-deep);
+      background: var(--stage-color);
+      animation: fadeIn 0.25s ease both;
+    }
+
+    .month-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .month-no {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--stage-color);
+      letter-spacing: 0.5px;
+    }
+
+    .month-stage {
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--stage-color);
+      background: color-mix(in srgb, var(--stage-color) 12%, transparent);
+    }
+
+    .month-card h4 {
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .month-card p {
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+    }
+
+    .month-output {
+      margin-top: 9px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .month-output strong {
+      color: var(--stage-color);
+    }
+
+    .roadmap-bridge {
+      margin-top: 20px;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(90deg, rgba(26, 115, 232, 0.12), rgba(252, 191, 73, 0.08));
+      border: 1px solid rgba(77, 163, 255, 0.16);
+    }
+
+    .roadmap-bridge p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .roadmap-bridge strong {
+      color: var(--text-primary);
+    }
+
+    .roadmap-bridge .bridge-arrow {
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sunset-gold);
+    }
+
+    @media (max-width: 1100px) {
+      .month-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+
+      .implementation-strategy,
+      .month-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .milestone-heading,
+      .roadmap-bridge {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 520px) {
+
+      .implementation-strategy,
+      .month-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* ========== Value Summary Grid ========== */
     .value-grid {
       display: grid;
@@ -2100,6 +3289,305 @@
       background: rgba(230, 57, 70, 0.08);
     }
 
+    /* ========== Joint Management Section ========== */
+    .joint-mgmt-intro {
+      background: linear-gradient(135deg, rgba(46, 196, 182, 0.08) 0%, rgba(26, 115, 232, 0.1) 100%);
+      border: 1px solid rgba(46, 196, 182, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      margin-bottom: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .joint-mgmt-intro::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(46, 196, 182, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .joint-mgmt-intro p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 2;
+      position: relative;
+      z-index: 1;
+    }
+
+    .joint-mgmt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .joint-mgmt-card {
+      padding: 36px;
+      position: relative;
+    }
+
+    .joint-mgmt-card .jm-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .joint-mgmt-card:nth-child(1) .jm-icon {
+      background: rgba(46, 196, 182, 0.12);
+    }
+
+    .joint-mgmt-card:nth-child(2) .jm-icon {
+      background: rgba(77, 163, 255, 0.12);
+    }
+
+    .joint-mgmt-card:nth-child(3) .jm-icon {
+      background: rgba(252, 191, 73, 0.12);
+    }
+
+    .joint-mgmt-card:nth-child(4) .jm-icon {
+      background: rgba(247, 127, 0, 0.12);
+    }
+
+    .joint-mgmt-card h4 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .joint-mgmt-card .jm-role {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .jm-role.party-b {
+      background: rgba(46, 196, 182, 0.1);
+      color: var(--success-green);
+      border: 1px solid rgba(46, 196, 182, 0.25);
+    }
+
+    .jm-role.party-a {
+      background: rgba(77, 163, 255, 0.1);
+      color: var(--harbor-light);
+      border: 1px solid rgba(77, 163, 255, 0.25);
+    }
+
+    .jm-role.joint {
+      background: rgba(252, 191, 73, 0.1);
+      color: var(--sunset-gold);
+      border: 1px solid rgba(252, 191, 73, 0.25);
+    }
+
+    .joint-mgmt-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .joint-mgmt-card ul li {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .joint-mgmt-card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--harbor-light);
+      opacity: 0.6;
+    }
+
+    .joint-mgmt-card:nth-child(1) ul li::before {
+      background: var(--success-green);
+    }
+
+    .joint-mgmt-card:nth-child(3) ul li::before {
+      background: var(--sunset-gold);
+    }
+
+    .joint-mgmt-card:nth-child(4) ul li::before {
+      background: var(--sunset-orange);
+    }
+
+    .joint-mgmt-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .jm-flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 24px 20px;
+      text-align: center;
+      min-width: 160px;
+    }
+
+    .jm-flow-step .jm-flow-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: rgba(77, 163, 255, 0.1);
+      border: 2px solid rgba(77, 163, 255, 0.25);
+    }
+
+    .jm-flow-step .jm-flow-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .jm-flow-step .jm-flow-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 140px;
+    }
+
+    .jm-flow-arrow {
+      font-size: 20px;
+      color: var(--harbor-light);
+      opacity: 0.5;
+      padding: 0 4px;
+    }
+
+    .joint-mgmt-vision {
+      background: linear-gradient(135deg, rgba(26, 115, 232, 0.12) 0%, rgba(46, 196, 182, 0.08) 50%, rgba(252, 191, 73, 0.08) 100%);
+      border: 1px solid rgba(77, 163, 255, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .joint-mgmt-vision::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 60% 40%, rgba(46, 196, 182, 0.04) 0%, transparent 50%);
+      animation: rotateGlow 20s linear infinite;
+    }
+
+    .joint-mgmt-vision h3 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .joint-mgmt-vision p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 auto;
+      line-height: 2;
+      position: relative;
+    }
+
+    .joint-mgmt-vision .vision-tags {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .joint-mgmt-vision .vision-tag {
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid;
+      transition: all 0.3s;
+    }
+
+    .joint-mgmt-vision .vision-tag:hover {
+      transform: scale(1.05);
+    }
+
+    .joint-mgmt-vision .vision-tag:nth-child(1) {
+      border-color: rgba(46, 196, 182, 0.3);
+      color: var(--success-green);
+      background: rgba(46, 196, 182, 0.08);
+    }
+
+    .joint-mgmt-vision .vision-tag:nth-child(2) {
+      border-color: rgba(77, 163, 255, 0.3);
+      color: var(--harbor-light);
+      background: rgba(77, 163, 255, 0.08);
+    }
+
+    .joint-mgmt-vision .vision-tag:nth-child(3) {
+      border-color: rgba(252, 191, 73, 0.3);
+      color: var(--sunset-gold);
+      background: rgba(252, 191, 73, 0.08);
+    }
+
+    .joint-mgmt-vision .vision-tag:nth-child(4) {
+      border-color: rgba(247, 127, 0, 0.3);
+      color: var(--sunset-orange);
+      background: rgba(247, 127, 0, 0.08);
+    }
+
+    @media (max-width: 1024px) {
+      .joint-mgmt-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .joint-mgmt-intro {
+        padding: 28px 22px;
+      }
+
+      .joint-mgmt-vision {
+        padding: 32px 22px;
+      }
+
+      .joint-mgmt-flow {
+        flex-direction: column;
+      }
+
+      .jm-flow-arrow {
+        transform: rotate(90deg);
+      }
+    }
+
     /* ========== Footer ========== */
     .footer {
       padding: 48px 40px;
@@ -2178,10 +3666,11 @@
       }
 
       .toolchain-route {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .tool-route-item:not(:last-child)::after {
+      .tool-route-item:not(:last-child)::after,
+      .tool-route-item:nth-child(4)::after {
         display: none;
       }
 
@@ -2228,11 +3717,46 @@
       .data-asset-overview {
         grid-template-columns: 1fr;
       }
+
+      .solution-architecture {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .solution-layer:not(:last-child)::after {
+        display: none;
+      }
+
+      .capability-boundary {
+        grid-template-columns: 1fr;
+      }
+
+      .boundary-step:not(:last-child)::after {
+        content: '↓';
+        right: 22px;
+        top: auto;
+        bottom: -17px;
+        transform: none;
+      }
     }
 
     @media (max-width: 900px) {
       .nav-links {
         display: none;
+      }
+
+      .page-dock {
+        right: 14px;
+        grid-template-columns: 36px 74px 36px;
+      }
+
+      .page-dock-title,
+      .page-dock-hint {
+        display: none;
+      }
+
+      .hero-port-cover .hero-content {
+        width: min(680px, calc(100vw - 80px));
+        margin-left: 0;
       }
     }
 
@@ -2248,6 +3772,58 @@
       .hero-stats {
         flex-direction: column;
         gap: 20px;
+      }
+
+      .hero.hero-port-cover {
+        align-items: flex-end;
+        padding: 108px 24px 48px;
+        background-position: 61% center;
+      }
+
+      .hero.hero-port-cover::after {
+        background: linear-gradient(180deg, rgba(3, 11, 20, 0.18) 0%, rgba(3, 11, 20, 0.58) 42%, rgba(3, 11, 20, 0.96) 100%);
+      }
+
+      .hero-port-cover .hero-content {
+        width: 100%;
+        max-width: none;
+      }
+
+      .hero-port-cover .hero-badge {
+        max-width: 100%;
+        padding: 7px 13px;
+        font-size: 10px;
+      }
+
+      .hero-port-cover h1 {
+        font-size: clamp(34px, 10vw, 48px);
+      }
+
+      .hero-port-cover .hero-subtitle {
+        margin-bottom: 28px;
+        font-size: 14px;
+      }
+
+      .hero-port-cover .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 0;
+      }
+
+      .hero-port-cover .hero-stat,
+      .hero-port-cover .hero-stat:first-child {
+        min-width: 0;
+        padding: 0 14px;
+        border-left: 1px solid rgba(255, 255, 255, 0.11);
+      }
+
+      .hero-port-cover .hero-stat:nth-child(odd) {
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      .hero-port-cover .hero-stat .number {
+        font-size: 30px;
       }
 
       .nav-links {
@@ -2339,6 +3915,49 @@
       .transform-arrow {
         flex-direction: column;
       }
+
+      .solution-architecture {
+        grid-template-columns: 1fr;
+      }
+
+      .solution-layer {
+        min-height: auto;
+      }
+
+      .page-dock {
+        right: 12px;
+      }
+    }
+
+    @media (hover: none),
+    (pointer: coarse) {
+
+      .cursor-orb,
+      .cursor-ring {
+        display: none !important;
+      }
+
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      .cursor-orb,
+      .cursor-ring {
+        display: none !important;
+      }
+
     }
 
     /* ========== Lightbox ========== */
@@ -2369,6 +3988,27 @@
       box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
     }
 
+    .lightbox-close {
+      position: fixed;
+      top: 24px;
+      right: 28px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(10, 22, 40, 0.75);
+      cursor: pointer;
+      font-size: 26px;
+      line-height: 1;
+      transition: transform 0.25s, background 0.25s;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(230, 57, 70, 0.65);
+      transform: rotate(90deg) scale(1.06);
+    }
+
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -2383,6 +4023,10 @@
     @media print {
 
       .nav,
+      .reading-progress,
+      .page-dock,
+      .cursor-orb,
+      .cursor-ring,
       .ocean-bg,
       .particles-container,
       .ship-track,
@@ -2414,6 +4058,8 @@
   <!-- Animated Background -->
   <div class="ocean-bg"></div>
   <div class="particles-container" id="particles"></div>
+  <div class="cursor-orb" id="cursorOrb" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
   <!-- Navigation -->
   <nav class="nav" id="mainNav">
@@ -2440,39 +4086,52 @@
         <li><a href="#arch">数据架构</a></li>
         <li><a href="#governance">数据治理</a></li>
         <li><a href="#toolchain">处理工具</a></li>
-        <li><a href="#scenarios">场景分析</a></li>
-        <li><a href="#data-asset">整体目标</a></li>
+        <li><a href="#scenarios">经营分析</a></li>
+        <li><a href="#data-asset">异常分析</a></li>
+        <li><a href="#joint-mgmt">数据运营</a></li>
         <li><a href="#roadmap">实施路径</a></li>
         <li><a href="#value">综合价值</a></li>
       </ul>
     </div>
   </nav>
 
+  <div class="reading-progress" aria-hidden="true"><span id="readingProgress"></span></div>
+  <aside class="page-dock" aria-label="汇报翻页控制">
+    <button type="button" id="pagePrev" aria-label="上一页" title="上一页（← / ↑）">←</button>
+    <div class="page-dock-copy" aria-live="polite">
+      <span class="page-dock-count" id="pageCount">01 / 15</span>
+      <span class="page-dock-title" id="pageTitle">方案总览</span>
+    </div>
+    <button type="button" id="pageNext" aria-label="下一页" title="下一页（→ / ↓）">→</button>
+    <span class="page-dock-hint">方向键翻页</span>
+  </aside>
+  <button type="button" class="audience-fullscreen-button" id="audienceFullscreen">⛶ 全屏演示</button>
+
   <!-- Hero Section -->
-  <section class="hero" id="hero">
+  <section class="hero hero-port-cover" id="hero">
     <div class="hero-content">
       <div class="hero-badge">
         <span class="pulse-dot"></span>
-        港口数字化运营平台建设总体方案（2026）
+        履约中心 × 运营管理数据中心一体化建设方案（2026）
       </div>
       <h1>构建新一代<br><span class="gradient-text">港口一体化数字运营平台</span></h1>
-      <p class="hero-subtitle">以履约中心为业务执行引擎，以数据资产池为企业级数据底座，<br>构建数据智能驱动、业务全域协同的平台化运营体系</p>
+      <p class="hero-subtitle">履约中心负责业务运行，运营管理数据中心统一治理与场景分析，<br>形成“业务在线运行—过程数据沉淀—治理增值-反哺运营”的持续闭环</p>
       <div class="hero-stats">
         <div class="hero-stat">
-          <span class="number" data-count="4"></span>
-          <span class="label">核心目标</span>
+          <span class="number" data-count="2">0</span>
+          <span class="label">建设主线</span>
+        </div>
+        <div class="hero-stat">
+          <span class="number" data-count="3">0</span>
+          <span class="label">协同层次</span>
         </div>
         <div class="hero-stat">
           <span class="number" data-count="2">0</span>
-          <span class="label">实施阶段</span>
+          <span class="label">一期场景</span>
         </div>
         <div class="hero-stat">
-          <span class="number" data-count="2">0</span>
-          <span class="label">规划场景</span>
-        </div>
-        <div class="hero-stat">
-          <span class="number" data-count="5">0</span>
-          <span class="label">年路线图</span>
+          <span class="number" data-count="4">0</span>
+          <span class="label">阶段里程碑</span>
         </div>
       </div>
     </div>
@@ -2534,14 +4193,14 @@
     <div class="bg-grid reveal">
       <div class="card bg-main-card">
         <h3>⚓ 运营升级方向</h3>
-        <p>随着港口物流业务持续复杂化，合同、订单、履约、计费、支付、客服反馈等数据仍分散在不同系统中，状态链不完整、口径不统一、跨系统追溯困难，现有人工核对和事后补救方式已难以支撑精细化运营。</p>
+        <p>随着港口物流业务持续复杂化，合同、订单、计费、支付、客服反馈等数据仍分散在不同系统中，状态链不完整、口径不统一、跨系统追溯困难，现有人工核对和事后补救方式已难以支撑精细化运营。</p>
         <div class="transform-arrow">
           <div class="transform-box from">🔴 被动响应模式</div>
           <div class="arrow-animated">→→→</div>
           <div class="transform-box to">🟢 主动管控模式</div>
         </div>
-        <p>本方案以<strong
-            style="color: var(--harbor-light)">履约中心承接业务执行闭环，以数据资产池夯实企业级数据底座</strong>，先打通关键链路、统一标准口径和质量规则，再逐步支撑运营管理、业财融合、风险预警和后续数据产品运营。
+        <p>本方案采用<strong style="color: var(--harbor-light)">“履约中心业务应用 + 履约数据支撑 +
+            运营管理数据中心”协同建设模式</strong>：先保障履约业务闭环与上线取数，再统一开展跨系统数据治理、资产目录和场景服务。
         </p>
       </div>
 
@@ -2611,15 +4270,15 @@
     <div class="section-header reveal">
       <div class="section-label">PART 03</div>
       <h2 class="section-title">履约中心定位与建设内容</h2>
-      <p class="section-desc">履约中心负责业务运行 · 数据资产池负责持续沉淀与治理</p>
+      <p class="section-desc">履约应用负责流程闭环 · 运营管理数据中心负责企业级治理</p>
     </div>
 
     <div class="fulfillment-grid reveal">
       <div class="card fulfillment-position">
         <div class="fulfillment-tag">业务执行引擎</div>
-        <h3>围绕“协议合同－订单－执行－计费－履约跟踪－工单归档”建立流程闭环</h3>
+        <h3>围绕“协议合同－订单－执行－计费结算－异常反馈－归档”建立流程闭环</h3>
         <p>
-          履约中心定位为业务应用和流程闭环系统，负责履约业务域的在线化管理与过程控制，不单独承担企业级数据中台职责。其运行过程中沉淀的合同、计费、履约、工单和操作日志，将反哺数据资产池，成为后续经营分析、业财融合和风险预警的重要数据来源。
+          履约中心定位为业务应用和流程闭环系统，负责履约业务域的在线化管理与过程控制，不单独承担企业级数据治理职责。其运行过程中沉淀的合同、计费、履约、结算、工单和操作日志，将作为运营管理数据中心的重要数据源。
         </p>
         <div class="fulfillment-chain">
           <span>协议合同</span>
@@ -2628,7 +4287,8 @@
           <span>计价计费</span>
           <span>工单归档</span>
         </div>
-        <div class="value-highlight">👉 <strong>边界原则</strong>：履约中心先解决业务上线、流程流转和操作闭环；数据资产池统一承接跨系统采集、标准治理、质量规则、资产目录和数据服务。
+        <div class="value-highlight">👉
+          <strong>边界原则</strong>：履约数据支撑层只解决业务运行取数和状态沉淀；运营管理数据中心统一承接企业级主数据、元数据、质量、安全、资产目录和数据服务。
         </div>
       </div>
 
@@ -2650,8 +4310,8 @@
         </div>
         <div class="card fulfillment-module">
           <span class="module-no">04</span>
-          <h4>工单闭环</h4>
-          <p>异常识别后自动派单，跟踪处理、升级、复核、结项和复盘标签，确保每个问题可定位、可追责、可归档。</p>
+          <h4>对账结算与异常闭环</h4>
+          <p>贯通对账单、核销、发票和异常反馈；规则命中后形成待核查清单或工单，跟踪处理、复核与归档。</p>
         </div>
       </div>
     </div>
@@ -2661,13 +4321,28 @@
         <h4>客户服务端</h4>
         <p>提供合同查询、履约进度、费用明细和发票查询，减少人工查询和业务进度沟通成本。</p>
       </div>
-      <div class="card fulfillment-lane">
-        <h4>商户履约端</h4>
-        <p>支持商户查看合作协议、上报节点进度、补充材料、反馈处理结果，并接收超时、材料缺失和费用提醒。</p>
-      </div>
+
       <div class="card fulfillment-lane">
         <h4>内部管控端</h4>
-        <p>面向业务、商务、客服、财务和管理人员提供任务处理、异常处置、规则校验、履约看板和审计留痕。</p>
+        <p>面向业务、商务、客服、财务和管理人员提供合同、费率、履约计划、计费、结算、异常和工单等内部管理能力。</p>
+      </div>
+    </div>
+
+    <div class="capability-boundary reveal" aria-label="三类能力边界">
+      <div class="boundary-step">
+        <span class="boundary-step-no">01</span>
+        <h4>履约中心应用</h4>
+        <p>客户服务端与内部管控端共同承接业务操作、流程审批和异常处置。</p>
+      </div>
+      <div class="boundary-step">
+        <span class="boundary-step-no">02</span>
+        <h4>履约数据支撑层</h4>
+        <p>沉淀上线必需的合同、订单、费用、结算、节点、异常、工单和日志。</p>
+      </div>
+      <div class="boundary-step">
+        <span class="boundary-step-no">03</span>
+        <h4>运营管理数据中心</h4>
+        <p>统一接入履约及相关系统数据，完成治理、资产化、服务发布和场景分析。</p>
       </div>
     </div>
   </section>
@@ -2677,7 +4352,7 @@
     <div class="section-header reveal">
       <div class="section-label">PART 04</div>
       <h2 class="section-title">履约中心流程图</h2>
-      <p class="section-desc">围绕协议合同、订单执行、计价计费、履约跟踪和工单归档形成闭环</p>
+      <p class="section-desc">围绕协议合同、订单执行、计价计费、履约跟踪、对账结算和异常归档形成闭环</p>
     </div>
 
     <div class="reveal">
@@ -2693,7 +4368,7 @@
     <div class="section-header reveal">
       <div class="section-label">PART 05</div>
       <h2 class="section-title">履约中心建设目标与落地场景</h2>
-      <p class="section-desc">围绕合同、订单、履约、计费、工单形成业务运行闭环，点击展开查看详情</p>
+      <p class="section-desc">围绕合同、订单、履约、计费、结算和异常形成业务运行闭环，点击展开查看详情</p>
     </div>
 
     <div class="goals-grid reveal">
@@ -2757,16 +4432,16 @@
       <div class="card goal-card" onclick="toggleGoal(this)">
         <span class="goal-number">04</span>
         <div class="goal-icon">🔁</div>
-        <h3>工单处置闭环化</h3>
-        <div class="goal-subtitle">异常派单，责任归档</div>
+        <h3>结算异常闭环化</h3>
+        <div class="goal-subtitle">对账可核，异常可闭环</div>
         <div class="goal-toggle">展开详情 <span>→</span></div>
         <div class="goal-details">
           <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>异常自动派单</strong>：计费差异、状态错配、履约超时、接口失败等问题自动生成工单。</span></div>
+              class="dot"></span><span><strong>对账结算贯通</strong>：统一查看应收、实收、退款、补缴、核销、发票及结算状态。</span></div>
           <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>责任节点追踪</strong>：明确责任岗位、处理时限、升级规则和结项条件，避免问题长期悬空。</span></div>
+              class="dot"></span><span><strong>异常清单转办</strong>：计费差异、状态错配、履约超时等规则命中结果按需转为工单或既有流程任务。</span></div>
           <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>复盘样本沉淀</strong>：处理结果、原因分类和复盘标签归档，为后续规则优化和数据治理提供样本。</span></div>
+              class="dot"></span><span><strong>处置结果留痕</strong>：记录责任岗位、处理时限、复核结果和原因标签，为规则优化和审计追溯提供依据。</span></div>
         </div>
       </div>
     </div>
@@ -2776,50 +4451,17 @@
   <section class="section" id="arch">
     <div class="section-header reveal">
       <div class="section-label">PART 06</div>
-      <h2 class="section-title">数据中台与数据资产体系总体架构</h2>
-      <p class="section-desc">四层递进 · 引水入渠 → 百川归海 → 资产封装 → 降本创收</p>
+      <h2 class="section-title">运营管理数据中心总体架构</h2>
+      <p class="section-desc">四层进阶：引水入渠 → 百川归海 → 资产封装 → 价值变现</p>
     </div>
 
-    <div class="arch-layout reveal">
-      <!-- 核心架构图 (去除侧边栏，单列居中) -->
-      <div class="arch-center">
-        <div class="arch-image-main" onclick="openLightbox(this.querySelector('img').src)">
-          <div class="arch-image-badge">📐 总体架构图 · 点击放大</div>
-          <img src="images/data_arch_new.png" alt="港口数据资产体系总体架构图" loading="lazy">
-        </div>
+    <div class="flow-panel active reveal" style="display: block; opacity: 1; position: relative; margin-top: 32px;">
+      <div class="flow-image-wrapper" onclick="openLightbox(this.querySelector('img').src)">
+        <div class="flow-image-label">👀 港口数据资产体系总体架构图 · 点击放大</div>
+        <img src="images/ArchitectureDiagram.png" alt="港口数据资产体系总体架构图" loading="lazy">
       </div>
     </div>
-
-    <!-- 四层渐进流程卡片 (新版精美UI) -->
-    <div class="arch-flow-container reveal">
-      <div class="arch-flow-box">
-        <div class="flow-num">1</div>
-        <h4 class="flow-title">数据采集层</h4>
-        <div class="flow-sub">引水入渠</div>
-        <p class="flow-desc">多源异构数据实时 + 批量采集<br>汇聚分散数据，打通数据孤岛</p>
-      </div>
-      <div class="arch-flow-arrow">→</div>
-      <div class="arch-flow-box">
-        <div class="flow-num">2</div>
-        <h4 class="flow-title">数据治理层</h4>
-        <div class="flow-sub">百川归海 · 去浊留清</div>
-        <p class="flow-desc">统一主数据 MDM · 宽表融合<br>分类分级 · 血缘 · 快照</p>
-      </div>
-      <div class="arch-flow-arrow">→</div>
-      <div class="arch-flow-box">
-        <div class="flow-num">3</div>
-        <h4 class="flow-title">资产封装层</h4>
-        <div class="flow-sub">封装即用</div>
-        <p class="flow-desc">物流追踪 · 计费履约 · 客户风控<br>客诉知识资产 · 标准化资产</p>
-      </div>
-      <div class="arch-flow-arrow">→</div>
-      <div class="arch-flow-box">
-        <div class="flow-num">4</div>
-        <h4 class="flow-title">应用变现层</h4>
-        <div class="flow-sub">对内降本 · 对外创收</div>
-        <p class="flow-desc">反哺管理 · API 输出 · 产品化<br>AI 与大模型赋能</p>
-      </div>
-    </div>
+    <div class="architecture-loop reveal"><strong>持续闭环</strong><span>业务在线运行 → 过程数据沉淀 → 数据治理增值 → 分析结果反哺业务</span></div>
   </section>
 
   <!-- Section: Data Governance Methodology -->
@@ -2921,7 +4563,9 @@
         <div class="quality-gate-item"><b>有效性</b><span>非法值拦截</span></div>
         <div class="quality-gate-item"><b>及时性</b><span>延迟触发预警</span></div>
       </div>
-      <div class="quality-action-line"><strong>关键规则失败：</strong>阻断下游 · <strong>一般异常：</strong>告警并派单 · <strong>处置过程：</strong>全程留痕</div>
+      <div class="quality-action-line"><strong>关键规则失败：</strong>阻断下游 · <strong>一般异常：</strong>告警并派单 ·
+        <strong>处置过程：</strong>全程留痕
+      </div>
       <div class="governance-role-line">
         <div class="governance-role-item"><b>业务数据 Owner</b><span>定义口径与最终裁决</span></div>
         <div class="governance-role-item"><b>数据管理员</b><span>维护标准与治理台账</span></div>
@@ -2935,82 +4579,167 @@
   <section class="section" id="toolchain">
     <div class="section-header reveal">
       <div class="section-label">PART 08</div>
-      <h2 class="section-title">阿里云数据资产池产品组合与处理工具链</h2>
-      <p class="section-desc">统一开发治理、数仓存算、数据开放与分析展示协同建设，形成完整的数据生产和应用闭环</p>
+      <h2 class="section-title">阿里云数据开发治理一体化平台与协同工具体系</h2>
+      <p class="section-desc">统一项目空间 · 统一元数据 · 统一任务调度 · 统一质量门禁 · 统一权限体系</p>
     </div>
 
     <div class="value-highlight reveal" style="margin: -24px 0 30px; padding: 20px 24px;">
-      👉 <strong>推荐建设口径</strong>：数据资产池可围绕 <strong>DataWorks、MaxCompute、Quick BI / DataV、数据服务</strong>建设，并以<strong>质量规则、调度运维、安全权限和血缘目录</strong>作为贯穿全链路的横向保障能力。
+      👉 <strong>统一建设口径</strong>：本项目<strong>运营管理数据中心</strong>统一基于<strong>阿里云数据开发治理一体化平台</strong>建设，不零散采购工具后手工拼装；
+      以 <strong>DataWorks</strong> 为开发治理与运营中枢，在同一治理体系下协同完成采集、建模、质量、服务、安全与可视化。
     </div>
 
     <div class="tool-boundary reveal">
       <div class="card tool-boundary-card">
-        <span class="boundary-tag">统一开发治理与运营控制</span>
-        <h3>DataWorks 能力域</h3>
-        <p>DataWorks 不是数据资产池的全部，而是贯穿全链路的开发治理与运维控制平台：统一管理数据源、开发任务、质量规则、调度依赖、生产运维、资产目录、安全权限和数据服务。</p>
+        <span class="boundary-tag">统一平台中枢</span>
+        <h3>DataWorks 开发治理与运营控制</h3>
+        <p>贯穿数据治理全链路，统一管理项目空间、数据源、开发任务、调度依赖、质量规则、生产运维、元数据血缘、资产目录、安全权限和数据服务。</p>
         <ul>
-          <li>数据集成</li><li>建模开发</li><li>质量规则</li><li>调度运维</li><li>血缘目录</li><li>数据服务</li>
+          <li>统一项目空间</li>
+          <li>数据集成</li>
+          <li>建模开发</li>
+          <li>质量门禁</li>
+          <li>统一调度</li>
+          <li>元数据与血缘</li>
+          <li>权限与服务</li>
         </ul>
       </div>
       <div class="tool-boundary-link">⇄</div>
       <div class="card tool-boundary-card">
-        <span class="boundary-tag">数仓存算、数据开放与分析呈现</span>
-        <h3>存算 + 服务 + 应用协同</h3>
-        <p>MaxCompute 承担数据仓库存储与批量计算，数据服务负责标准 API 开放，Quick BI 面向经营分析，DataV 面向运营驾驶舱和可视化大屏。</p>
+        <span class="boundary-tag">平台内组件协同</span>
+        <h3>集成 → 存储计算 → 治理 → 服务分析</h3>
+        <p>数据资产池由平台内组件协同形成闭环：MaxCompute 承载 ODS / DWD / DWS / ADS 分层数仓、批量计算和每日快照；数据服务负责标准 API 发布；Quick BI / DataV
+          只消费治理达标且获得授权的数据集。</p>
         <ul>
-          <li>MaxCompute · 存算</li><li>数据服务 · API</li><li>Quick BI · 分析</li><li>DataV · 大屏</li>
+          <li>MaxCompute · 数仓存算</li>
+          <li>数据服务 · 受控开放</li>
+          <li>Quick BI / DataV · 分析展示</li>
+          <li>分类分级 · 脱敏审计</li>
         </ul>
       </div>
     </div>
 
     <div class="toolchain-route reveal">
-      <div class="tool-route-item"><span class="route-no">STEP 01</span><h4>环境与权限</h4><div class="route-tool">工作空间 / RAM / 资源组</div><p>隔离开发生产，绑定算力，最小权限授权</p></div>
-      <div class="tool-route-item"><span class="route-no">STEP 02</span><h4>数据接入</h4><div class="route-tool">数据集成</div><p>连接源端与 MaxCompute，配置全量 / 增量同步</p></div>
-      <div class="tool-route-item"><span class="route-no">STEP 03</span><h4>数仓存储计算</h4><div class="route-tool">MaxCompute</div><p>按分层模型沉淀数据并执行海量 SQL 加工</p></div>
-      <div class="tool-route-item"><span class="route-no">STEP 04</span><h4>开发编排</h4><div class="route-tool">Data Studio</div><p>拖拽节点、编写 SQL、设置依赖和调度参数</p></div>
-      <div class="tool-route-item"><span class="route-no">STEP 05</span><h4>质量闸门</h4><div class="route-tool">数据质量</div><p>规则随节点触发，失败告警或阻断下游</p></div>
-      <div class="tool-route-item"><span class="route-no">STEP 06</span><h4>生产运维</h4><div class="route-tool">运维中心</div><p>监控 DAG、基线、实例、日志并补数重跑</p></div>
-      <div class="tool-route-item"><span class="route-no">STEP 07</span><h4>服务与展示</h4><div class="route-tool">数据服务 / Quick BI / DataV</div><p>发布 API，形成经营报表、分析看板与运营大屏</p></div>
+      <div class="tool-route-item"><span class="route-no">STEP 01</span>
+        <h4>盘点与元数据</h4>
+        <div class="route-tool">数据地图</div>
+        <p>登记数据源、Owner、字段口径与血缘关系</p>
+      </div>
+      <div class="tool-route-item"><span class="route-no">STEP 02</span>
+        <h4>标准与主数据</h4>
+        <div class="route-tool">受控标准表 / OneID</div>
+        <p>码表、标准和映射统一沉淀并强制引用</p>
+      </div>
+      <div class="tool-route-item"><span class="route-no">STEP 03</span>
+        <h4>采集入仓</h4>
+        <div class="route-tool">数据集成 → ODS</div>
+        <p>库表 / API / 文件同步，失败告警并支持重跑</p>
+      </div>
+      <div class="tool-route-item"><span class="route-no">STEP 04</span>
+        <h4>分层建模</h4>
+        <div class="route-tool">DataStudio + MaxCompute</div>
+        <p>ODS → DWD → DWS → ADS，绑定强弱规则</p>
+      </div>
+      <div class="tool-route-item"><span class="route-no">STEP 05</span>
+        <h4>质量闸门</h4>
+        <div class="route-tool">数据质量</div>
+        <p>覆盖分层表，输出异常明细、达标率与处置清单</p>
+      </div>
+      <div class="tool-route-item"><span class="route-no">STEP 06</span>
+        <h4>服务与分析</h4>
+        <div class="route-tool">数据服务 / Quick BI / DataV</div>
+        <p>达标 ADS 受控发布为 API、报表与运营看板</p>
+      </div>
+      <div class="tool-route-item"><span class="route-no">STEP 07</span>
+        <h4>调度运营</h4>
+        <div class="route-tool">运维中心</div>
+        <p>串联全链路，监控基线并按业务日补数重跑</p>
+      </div>
+      <div class="tool-route-item"><span class="route-no">STEP 08</span>
+        <h4>安全控制</h4>
+        <div class="route-tool">空间隔离 / 授权 / 审计</div>
+        <p>开发测试生产隔离，字段与导出全过程受控</p>
+      </div>
     </div>
 
     <div class="tool-detail-grid reveal">
       <div class="card tool-detail-card">
-        <div class="tool-detail-head"><div class="tool-detail-icon">🔗</div><div><h4>数据集成（Data Integration）</h4><small>把数据稳定、可核对地搬进数仓</small></div><span class="tool-phase-badge">接入</span></div>
-        <p>支持关系型数据库、文件、消息队列等异构数据源的离线、实时及全增量同步；同步前先配置数据源、资源组和网络连通。</p>
-        <div class="tool-howto"><strong>港融项目用法：</strong>创建 TOS / 订单 / 财务等数据源 → 选择源表与 MaxCompute ODS 目标表 → 配置字段映射、分区 <code>${bizdate}</code>、并发数和脏数据策略 → 测试后纳入调度。</div>
+        <div class="tool-detail-head">
+          <div class="tool-detail-icon">🔗</div>
+          <div>
+            <h4>数据集成（Data Integration）</h4><small>把数据稳定、可核对地搬进数仓</small>
+          </div><span class="tool-phase-badge">接入</span>
+        </div>
+        <p>负责库表、API 和文件等异构数据源的全量或增量同步；所有接入任务均在统一项目空间内配置资源、网络、失败告警和重跑策略。</p>
+        <div class="tool-howto"><strong>港融项目用法：</strong>创建 TOS / 订单 / 财务等数据源 → 选择源表与 MaxCompute ODS 目标表 → 配置字段映射、分区
+          <code>${bizdate}</code>、并发数和脏数据策略 → 入仓即执行首轮质量校验。
+        </div>
       </div>
       <div class="card tool-detail-card">
-        <div class="tool-detail-head"><div class="tool-detail-icon">🧮</div><div><h4>MaxCompute</h4><small>海量数据的存储与批量计算底座</small></div><span class="tool-phase-badge">存算</span></div>
-        <p>负责数据表、分区、SQL 计算和存储生命周期。它不是操作编排界面，而是被 DataWorks 调用的数仓计算引擎。</p>
-        <div class="tool-howto"><strong>港融项目用法：</strong>ODS 保留源数据 → DIM / DWD 统一客户、订单、箱货和费用明细 → DWS 汇总主题指标 → ADS 输出看板、核验和异常识别结果。</div>
+        <div class="tool-detail-head">
+          <div class="tool-detail-icon">🧮</div>
+          <div>
+            <h4>MaxCompute</h4><small>海量数据的存储与批量计算底座</small>
+          </div><span class="tool-phase-badge">存算</span>
+        </div>
+        <p>作为离线数仓和批量计算底座，负责数据表、分区、SQL 计算、生命周期与每日快照，并由 DataWorks 统一开发和调度。</p>
+        <div class="tool-howto"><strong>港融项目用法：</strong>ODS 保留源数据 → DIM / DWD 统一客户、订单、箱货和费用明细 → DWS 汇总主题指标 → ADS
+          输出看板、核验和异常识别结果。</div>
       </div>
       <div class="card tool-detail-card">
-        <div class="tool-detail-head"><div class="tool-detail-icon">🧱</div><div><h4>数据开发（Data Studio）</h4><small>开发 SQL、依赖和周期任务</small></div><span class="tool-phase-badge">开发</span></div>
-        <p>在画布中创建数据集成、MaxCompute SQL、虚拟节点等任务，配置上下游 DAG、调度参数、运行资源并进行测试、提交和发布。</p>
-        <div class="tool-howto"><strong>港融项目用法：</strong>按业务流程建立工作流；使用 <code>${bizdate}</code> 接收业务日期；以“接入 → 清洗 → 维表 / 明细 → 汇总 → 应用”连线，标准模式下经开发、评审后发布生产。</div>
+        <div class="tool-detail-head">
+          <div class="tool-detail-icon">🧱</div>
+          <div>
+            <h4>数据开发（DataStudio）</h4><small>开发 SQL、依赖和周期任务</small>
+          </div><span class="tool-phase-badge">开发</span>
+        </div>
+        <p>在统一工作空间中开发 MaxCompute SQL 和工作流，配置上下游 DAG、调度参数、质量规则与运行资源，并完成测试、评审和生产发布。</p>
+        <div class="tool-howto"><strong>港融项目用法：</strong>按业务流程建立工作流；使用 <code>${bizdate}</code> 接收业务日期；以“接入 → 清洗 → 维表 / 明细
+          → 汇总 → 应用”连线，标准模式下经开发、评审后发布生产。</div>
       </div>
       <div class="card tool-detail-card">
-        <div class="tool-detail-head"><div class="tool-detail-icon">🛡️</div><div><h4>数据质量与生产运维</h4><small>Data Quality + Operation Center</small></div><span class="tool-phase-badge">保障</span></div>
-        <p>质量规则随调度节点执行，并通过 DAG、实例、基线和日志监控任务运行，支持告警、诊断、补数和重跑。</p>
-        <div class="tool-howto"><strong>港融项目用法：</strong>关键订单、支付和计费规则失败时阻断下游；为“每日经营数据产出”配置基线，异常时快速定位并按业务日期补数恢复。</div>
+        <div class="tool-detail-head">
+          <div class="tool-detail-icon">🛡️</div>
+          <div>
+            <h4>数据质量与生产运维</h4><small>Data Quality + Operation Center</small>
+          </div><span class="tool-phase-badge">保障</span>
+        </div>
+        <p>质量规则覆盖分层表和服务结果，随调度节点执行；运维中心通过 DAG、实例、基线和日志监控任务，支持告警、诊断、补数和重跑。</p>
+        <div class="tool-howto"><strong>港融项目用法：</strong>关键订单、支付和计费强规则失败时阻断下游，一般问题告警并派单；为“每日经营数据产出”配置基线并输出达标率。</div>
       </div>
       <div class="card tool-detail-card">
-        <div class="tool-detail-head"><div class="tool-detail-icon">🗺️</div><div><h4>数据地图 + 数据服务</h4><small>让数据找得到、看得懂、取得到、用得稳</small></div><span class="tool-phase-badge">服务</span></div>
-        <p>数据地图沉淀元数据、字段、血缘、质量和安全等级；数据服务将授权后的结果表以零代码或 SQL 方式发布为标准 API。</p>
-        <div class="tool-howto"><strong>港融项目用法：</strong>业务人员先在目录检索指标与血缘并申请权限；成熟的订单状态、箱货轨迹、费用核验和风险提示结果，通过审批后向履约中心或外部生态提供服务。</div>
+        <div class="tool-detail-head">
+          <div class="tool-detail-icon">🗺️</div>
+          <div>
+            <h4>数据地图 + 数据服务</h4><small>让数据找得到、看得懂、取得到、用得稳</small>
+          </div><span class="tool-phase-badge">服务</span>
+        </div>
+        <p>数据地图统一沉淀数据源、Owner、元数据、字段口径、血缘、质量和安全等级；数据服务将治理达标且获得授权的结果表发布为标准 API。</p>
+        <div class="tool-howto">
+          <strong>港融项目用法：</strong>业务人员先在目录检索指标与血缘并申请权限；成熟的订单状态、箱货轨迹、费用核验和风险提示结果，通过审批后向履约中心或授权应用提供服务。
+        </div>
       </div>
       <div class="card tool-detail-card">
-        <div class="tool-detail-head"><div class="tool-detail-icon">📊</div><div><h4>Quick BI / DataV</h4><small>经营分析、报表门户与可视化大屏</small></div><span class="tool-phase-badge">展现</span></div>
-        <p>Quick BI 面向数据集、自助分析、电子表格和仪表板；DataV 侧重低代码可视化大屏、二维 / 三维时空展示及跨页面交互编排。</p>
-        <div class="tool-howto"><strong>港融项目用法：</strong>Quick BI 承载领导经营看板、业财分析、客户分析和专题报表；DataV 承载港口运营驾驶舱、船箱轨迹、场站态势与风险预警大屏。展示层只读取通过质量校验和授权的数据集。</div>
+        <div class="tool-detail-head">
+          <div class="tool-detail-icon">📊</div>
+          <div>
+            <h4>Quick BI / DataV</h4><small>经营分析、报表门户与可视化大屏</small>
+          </div><span class="tool-phase-badge">展现</span>
+        </div>
+        <p>Quick BI 面向数据集、自助分析和仪表板；DataV 侧重可视化大屏与交互编排。二者只消费治理达标数据，并服从字段权限、脱敏、导出和审计要求。</p>
+        <div class="tool-howto"><strong>港融项目用法：</strong>Quick BI 承载领导经营看板、业财分析、客户分析和专题报表；DataV
+          承载港口运营驾驶舱、船箱轨迹、场站态势与风险预警大屏。展示层只读取通过质量校验和授权的数据集。</div>
       </div>
     </div>
 
     <div class="tool-source-note reveal">
-      <span>资料说明：产品定位、工具能力和操作步骤均依据阿里云官方文档整理；实际建设范围需结合实时性、并发量、展示对象、采购版本和总体成本进一步确认。</span>
+      <span><strong>按需扩展边界：</strong>近实时箱动态或日志类需求，可在数据规模、时效和并发要求明确后扩展实时或查询加速链路；新增能力仍须纳入同一元数据、质量、调度与权限体系，基础组合不预设额外查询加速组件。产品范围需结合采购版本和总体成本确认。</span>
       <div class="tool-source-links">
-        <a href="https://help.aliyun.com/zh/dataworks/user-guide/advanced-case-analysis-of-best-selling-category-of-commodity-orders" target="_blank" rel="noopener noreferrer">DataWorks 案例 ↗</a>
-        <a href="https://help.aliyun.com/zh/quick-bi/product-overview/introduction-to-quick-bi-1" target="_blank" rel="noopener noreferrer">Quick BI ↗</a>
+        <a href="https://help.aliyun.com/zh/dataworks/user-guide/functions-and-features/" target="_blank"
+          rel="noopener noreferrer">DataWorks ↗</a>
+        <a href="https://help.aliyun.com/zh/maxcompute/product-overview/what-is-maxcompute" target="_blank"
+          rel="noopener noreferrer">MaxCompute ↗</a>
+        <a href="https://help.aliyun.com/zh/quick-bi/product-overview/introduction-to-quick-bi-1" target="_blank"
+          rel="noopener noreferrer">Quick BI ↗</a>
         <a href="https://help.aliyun.com/zh/datav/" target="_blank" rel="noopener noreferrer">DataV ↗</a>
       </div>
     </div>
@@ -3019,510 +4748,519 @@
   <!-- Section: Operating Scenarios -->
   <section class="section" id="scenarios">
     <div class="section-header reveal">
-      <div class="section-label">PART 09</div>
-      <h2 class="section-title">经营分析核心场景</h2>
-      <p class="section-desc">订单全链路核验 × 异常订单分析 · 先核验、后分析的递进关系</p>
+      <div class="section-label">PART 09 </div>
+      <h2 class="section-title">应用场景建设｜经营分析</h2>
+      <p class="section-desc">整体信息跟踪 · 订单支付核验 · 运营商务确认 · 结算提前感知</p>
     </div>
 
     <div class="scenario-container reveal">
       <div class="scenario-nav">
         <div class="scenario-nav-item active" onclick="switchScenario(0)">
           <span class="nav-dot"></span>
-          <span>全链路信息核验</span>
+          <span>全链路跟踪</span>
         </div>
         <div class="scenario-nav-item" onclick="switchScenario(1)">
           <span class="nav-dot"></span>
-          <span>状态一致性校验</span>
+          <span>支付与质量核验</span>
         </div>
         <div class="scenario-nav-item" onclick="switchScenario(2)">
           <span class="nav-dot"></span>
-          <span>过程留痕与对账</span>
+          <span>运营商务确认</span>
         </div>
         <div class="scenario-nav-item" onclick="switchScenario(3)">
           <span class="nav-dot"></span>
-          <span>基础异常识别</span>
-        </div>
-        <div class="scenario-nav-item" onclick="switchScenario(4)">
-          <span class="nav-dot"></span>
-          <span>金额与支付异常</span>
-        </div>
-        <div class="scenario-nav-item" onclick="switchScenario(5)">
-          <span class="nav-dot"></span>
-          <span>支付链路异常</span>
-        </div>
-        <div class="scenario-nav-item" onclick="switchScenario(6)">
-          <span class="nav-dot"></span>
-          <span>履约与时间异常</span>
-        </div>
-        <div class="scenario-nav-item" onclick="switchScenario(7)">
-          <span class="nav-dot"></span>
-          <span>业务规则异常</span>
+          <span>结算提前感知</span>
         </div>
       </div>
 
       <div>
-        <!-- Panel 0: 全链路信息核验 -->
+        <!-- Panel 0: 一期进口试点主线 -->
         <div class="scenario-content-panel active" id="scenario-0">
           <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(26,115,232,0.12);color:var(--harbor-light);font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景一 · 基础场景</div>
-            <h3>全链路信息核验</h3>
-            <div class="scenario-intro">围绕订单号、合同号、箱号、计划号、客户主体、支付记录及履约信息，对业务全过程进行一致性核对，确保业务链路完整可追溯。</div>
-            <div class="sub-section">
-              <ul>
-                <li><strong>状态链路完整性</strong>：核验订单从创建到完成的状态链路是否完整闭合，识别任何中间态缺失或跳跃。</li>
-                <li><strong>合同-订单对应关系</strong>：校验合同与订单是否一一对应，识别一合同多订单、一订单无合同等异常关联。</li>
-                <li><strong>箱号-订单匹配性</strong>：核对箱号与订单的绑定关系，排查箱号重复挂载、错误关联等问题。</li>
-                <li><strong>履约节点完整性</strong>：检查履约全过程关键节点（提箱、装货、发运、到港、卸货、还箱等）是否完整记录。</li>
-                <li><strong>支付闭环校验</strong>：验证支付记录是否完整闭环——从费用生成、账单推送、客户支付到入账核销，全链路无断点。</li>
-              </ul>
+            <div class="scene-tag">一期试点 · 集装箱进口</div>
+            <h3>一票业务全链路统一查看</h3>
+            <div class="scenario-intro">以订单为主线，关联合同、箱货、车辆人员、支付流水、客服工单、履约节点和结算开票，验证“统一查看、全链路关联、条件查询、每日快照”管理设想。</div>
+
+            <div class="trace-chain" aria-label="进口业务全链路">
+              <div class="trace-step"><b>合同签署</b><span>主体、条款、签章</span></div><span class="flow-chevron">→</span>
+              <div class="trace-step"><b>订单生成</b><span>业务单、箱号、计划</span></div><span class="flow-chevron">→</span>
+              <div class="trace-step"><b>支付核验</b><span>金额、时间、流水</span></div><span class="flow-chevron">→</span>
+              <div class="trace-step"><b>进出场</b><span>车辆、司机、卡号</span></div><span class="flow-chevron">→</span>
+              <div class="trace-step"><b>履约反馈</b><span>节点、状态、工单</span></div><span class="flow-chevron">→</span>
+              <div class="trace-step"><b>结算开票</b><span>应收、结算、发票</span></div>
             </div>
-            <div class="value-highlight">👉 <strong>核心价值</strong>：用于识别业务链路断点与数据缺失问题，确保每一笔业务"来有出处、去有归途"。</div>
+
+            <div class="scene-kpi-strip">
+              <div class="scene-kpi"><strong>看全链路</strong><span>一票业务、一份合同、一只箱、一笔支付穿透查询</span></div>
+              <div class="scene-kpi"><strong>验数据质量</strong><span>核验完整性、合理性、一致性、时序与关联关系</span></div>
+              <div class="scene-kpi"><strong>留静态证据</strong><span>每日快照保留当日事实，支撑对账、审计和争议处理</span></div>
+              <div class="scene-kpi"><strong>支撑处理</strong><span>异常清单、规则标注和辅助核查结果进入业务闭环</span></div>
+            </div>
+
+            <div class="field-cloud" aria-label="一期重点关联字段">
+              <span class="field-chip">订单号</span><span class="field-chip">业务订单号</span><span
+                class="field-chip">合同号</span>
+              <span class="field-chip">箱号</span><span class="field-chip">计划号</span><span class="field-chip">创建时间</span>
+              <span class="field-chip">支付时间</span><span class="field-chip">客户主体</span><span class="field-chip">车辆 / 司机 /
+                卡号</span>
+              <span class="field-chip">支付流水</span><span class="field-chip">客服工单</span><span class="field-chip">结算 /
+                开票状态</span>
+            </div>
+
+            <div class="value-highlight">👉 <strong>一期目标</strong>：先把进口业务链路看全、状态核准、事实留住，为运营商务确认和结算提前感知提供可信底稿。</div>
           </div>
         </div>
 
-        <!-- Panel 1: 状态一致性校验 -->
+        <!-- Panel 1: 支付与数据质量核验 -->
         <div class="scenario-content-panel" id="scenario-1">
           <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(26,115,232,0.12);color:var(--harbor-light);font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景一 · 状态交叉比对</div>
-            <h3>履约与支付状态一致性核验</h3>
-            <div class="scenario-intro">对订单支付与履约过程进行状态交叉比对，识别业务执行过程中的状态错配。</div>
+            <div class="scene-tag">规则核验 · 数据可信</div>
+            <h3>订单支付状态与链路质量核验</h3>
+            <div class="scenario-intro">围绕关键字段、业务状态、金额、时间和跨系统关联关系建立规则，输出可解释的异常标签、规则编号和核查依据。</div>
+
+            <div class="verification-grid">
+              <div class="verification-card"><b>字段完整性</b><span>客户、合同、箱号、时间、流水等必填项</span></div>
+              <div class="verification-card"><b>状态合理性</b><span>支付、订单、作业、退款、结算状态对应</span></div>
+              <div class="verification-card"><b>金额一致性</b><span>应收、实收、退款、补缴、发票相互核对</span></div>
+              <div class="verification-card"><b>时间顺序</b><span>创建、支付、进出场、履约和结算时序</span></div>
+              <div class="verification-card"><b>关联完整性</b><span>合同、订单、箱号、流水、工单关系可追溯</span></div>
+            </div>
+
             <table class="risk-table">
               <thead>
                 <tr>
-                  <th>核验维度</th>
-                  <th>异常场景</th>
-                  <th>风险等级</th>
+                  <th>交叉核验</th>
+                  <th>典型异常</th>
+                  <th>输出</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>支付已完成 × 履约未完成</td>
-                  <td>客户已付款但服务未交付，存在客诉与资金风险</td>
-                  <td><span class="risk-badge high">🔴 高</span></td>
+                  <td>支付状态 × 流水</td>
+                  <td>支付成功但缺少交易流水或到账确认</td>
+                  <td>冲突标签 + 规则编号</td>
                 </tr>
                 <tr>
-                  <td>未支付 × 订单已完成</td>
-                  <td>服务已交付但费用未收取，存在漏收费风险</td>
-                  <td><span class="risk-badge high">🔴 高</span></td>
+                  <td>支付状态 × 作业状态</td>
+                  <td>支付失败但业务已放行，或已支付长期未作业</td>
+                  <td>待核查清单</td>
                 </tr>
                 <tr>
-                  <td>支付状态 × 订单状态</td>
-                  <td>支付完成但订单状态未同步更新，系统状态不一致</td>
-                  <td><span class="risk-badge medium">🟡 中</span></td>
+                  <td>退款补缴 × 订单状态</td>
+                  <td>退款、补缴与订单当前状态不一致</td>
+                  <td>差异原因分类</td>
                 </tr>
                 <tr>
-                  <td>履约节点 × 订单状态</td>
-                  <td>履约已推进但订单状态停滞，业务流转卡顿</td>
-                  <td><span class="risk-badge medium">🟡 中</span></td>
+                  <td>金额 × 结算开票</td>
+                  <td>应收、实收、结算或发票金额存在差异</td>
+                  <td>差异金额与来源</td>
                 </tr>
               </tbody>
             </table>
-            <div class="value-highlight">👉 <strong>核心价值</strong>：通过状态交叉比对，精准定位支付与履约之间的"错位地带"，为异常订单的快速介入提供数据依据。</div>
+
+            <div class="value-highlight">👉 <strong>处置边界</strong>：数据中心负责识别、标注和提供核查视图；异常交由履约中心或既有业务流程确认、处理和闭环。</div>
           </div>
         </div>
 
-        <!-- Panel 2: 过程留痕 -->
+        <!-- Panel 2: 运营与商务确认 -->
         <div class="scenario-content-panel" id="scenario-2">
           <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(26,115,232,0.12);color:var(--harbor-light);font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景一 · 留痕对账</div>
-            <h3>业务过程留痕与对账支撑</h3>
-            <div class="scenario-intro">对订单全生命周期关键节点进行标准化留存，构建可追溯的业务证据链。</div>
-            <div class="sub-section">
-              <ul>
-                <li><strong>订单创建记录</strong>：包含创建时间、操作人、关联合同号、客户主体等基础信息。</li>
-                <li><strong>支付记录</strong>：包含支付时间、支付方式、支付金额、交易流水号及到账确认。</li>
-                <li><strong>履约节点记录</strong>：各作业环节的时间戳、操作人、状态变更及异常备注。</li>
-                <li><strong>结算与开票记录</strong>：结算周期、开票申请、发票号、核销状态等财务闭环信息。</li>
-              </ul>
+            <div class="scene-tag">一期重点 · 运营商务确认账单</div>
+            <h3>从订单自动分拣到高置信有效业务</h3>
+            <div class="scenario-intro">面向集装箱进口等业务，对周期内订单进行统一分拣和业务确认，把线下 Excel、口头确认转化为结构化、可回溯的运营确认台账。</div>
+
+            <div class="confirmation-flow" aria-label="运营商务确认流程">
+              <div class="confirmation-step"><b>状态自动分拣</b><span>已支付 / 未支付、未作业、已退款</span></div><span
+                class="flow-chevron">→</span>
+              <div class="confirmation-step"><b>形成待确认清单</b><span>链路完整可确认、差异待复核</span></div><span
+                class="flow-chevron">→</span>
+              <div class="confirmation-step"><b>运营商务确认</b><span>统一视图完成业务判断</span></div><span
+                class="flow-chevron">→</span>
+              <div class="confirmation-step"><b>分类标记</b><span>清结、退款、未作业、有效订单</span></div><span
+                class="flow-chevron">→</span>
+              <div class="confirmation-step"><b>结构化沉淀</b><span>确认人、时间、口径、备注</span></div>
             </div>
-            <div class="value-highlight">👉 <strong>核心价值</strong>：为日常对账、争议处理与历史追溯提供完整的数据底稿，支撑财务与业务的双向核对。</div>
+
+            <div class="scenario-panel-grid">
+              <div class="scenario-mini-card">
+                <h4>高置信有效订单口径</h4>
+                <p>经业务与商务共同确认后的清结订单，进入内部经营跟踪范围，作为后续对账、结算感知和经营统计的基础样本。</p>
+              </div>
+              <div class="scenario-mini-card">
+                <h4>保留低概率复核入口</h4>
+                <p>确认后仍保留状态回退、补录差异和退款变更等复核路径，避免“确认即不可调整”，保证口径可修正、过程可追溯。</p>
+              </div>
+            </div>
+
+            <div class="value-highlight">👉 <strong>确认成果</strong>：形成清结订单、退款订单、未作业订单等分类台账，为经营统计建立可解释、可回溯的业务样本。</div>
           </div>
         </div>
 
-        <!-- Panel 3: 基础异常识别 -->
+        <!-- Panel 3: 提前感知与结算关联 -->
         <div class="scenario-content-panel" id="scenario-3">
           <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(247,127,0,0.12);color:var(--sunset-orange);font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景一 · 异常分类</div>
-            <h3>基础异常问题识别</h3>
-            <div class="scenario-intro">对核对过程中发现的问题进行分类归档，形成异常问题清单，便于分级处置。</div>
-            <table class="risk-table">
-              <thead>
-                <tr>
-                  <th>异常类型</th>
-                  <th>典型表现</th>
-                  <th>处理方式</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>业务信息缺失</td>
-                  <td>订单缺少合同号、箱号为空、客户主体未填写</td>
-                  <td>自动触发数据补录工单</td>
-                </tr>
-                <tr>
-                  <td>状态链路不一致</td>
-                  <td>订单状态"已完成"但履约记录仅到"装货"</td>
-                  <td>自动预警并推送至业务负责人</td>
-                </tr>
-                <tr>
-                  <td>时间顺序异常</td>
-                  <td>支付时间早于订单创建时间</td>
-                  <td>标记为疑似数据异常，人工复核</td>
-                </tr>
-                <tr>
-                  <td>业务关联断裂</td>
-                  <td>订单存在但无对应合同</td>
-                  <td>自动标记为"孤立数据"</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="value-highlight">👉 <strong>核心价值</strong>：将散落的异常信号系统化、结构化，为后续深度分析与专项治理提供分类基础。</div>
-          </div>
-        </div>
+            <div class="scene-tag">经营预判 · 不替代正式结算</div>
+            <h3>清结订单与结算、开票持续比对</h3>
+            <div class="scenario-intro">码头正式结算收入存在时间滞后。平台基于已确认清结订单，关联预计应收和已支付金额，并与后续结算、开票状态持续比对，为内部管理提供阶段性预判。</div>
 
-        <!-- Panel 4: 金额与支付异常 -->
-        <div class="scenario-content-panel" id="scenario-4">
-          <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(230,57,70,0.12);color:#ff6b7a;font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景二 · 异常分析</div>
-            <h3>金额与支付异常</h3>
-            <div class="scenario-intro">针对订单金额与支付行为中的异常模式进行识别。</div>
-            <div class="sub-section">
-              <ul>
-                <li><strong>重复/异常金额分布</strong>：同一金额订单在短时间内出现异常高频，或金额分布偏离业务常规区间。</li>
-                <li><strong>有单无付</strong>：存在订单金额记录但无对应的支付完成确认，可能为遗漏收款或支付中断。</li>
-                <li><strong>多客户充值无成功记录</strong>：批量充值业务中，存在充值申请但缺乏成功支付回执。</li>
-                <li><strong>支付-订单完成不一致</strong>：支付状态显示"成功"但订单状态未推进至"完成"，或反之。</li>
-              </ul>
+            <div class="settlement-flow" aria-label="提前感知与结算关联流程">
+              <div class="settlement-step"><b>清结订单</b><span>运营商务确认通过</span></div><span class="flow-chevron">→</span>
+              <div class="settlement-step"><b>预计应收</b><span>按确认口径汇总</span></div><span class="flow-chevron">→</span>
+              <div class="settlement-step"><b>已支付金额</b><span>关联支付流水</span></div><span class="flow-chevron">→</span>
+              <div class="settlement-step"><b>正式结算</b><span>后续结算状态回传</span></div><span class="flow-chevron">→</span>
+              <div class="settlement-step"><b>开票完结</b><span>持续比对与差异复核</span></div>
             </div>
-            <div class="value-highlight" style="border-left-color: #ff6b7a;">⚠️ <strong>异常分类</strong>：金额异常 / 支付异常 /
-              状态异常<br><strong>处置机制</strong>：系统自动标记并生成异常工单，推送至财务与业务双向核实。</div>
-          </div>
-        </div>
 
-        <!-- Panel 5: 支付链路异常 -->
-        <div class="scenario-content-panel" id="scenario-5">
-          <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(230,57,70,0.12);color:#ff6b7a;font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景二 · 异常分析</div>
-            <h3>支付链路与主体信息异常</h3>
-            <div class="scenario-intro">针对支付基础信息的完整性与业务逻辑一致性进行检查。</div>
-            <div class="sub-section">
-              <ul>
-                <li><strong>支付信息缺失</strong>：交易流水号、支付渠道、支付时间等关键字段缺失或不完整。</li>
-                <li><strong>支付类型与业务类型不匹配</strong>：如集装箱堆存业务使用了"充值抵扣"方式，但业务规则要求实时结算。</li>
-                <li><strong>客户主体与业务逻辑不一致</strong>：付款主体与订单签约主体不一致，存在代付或挂账风险。</li>
-                <li><strong>关键支付信息缺失</strong>：订单金额为零但有实际作业记录，或大额订单无审批留痕。</li>
-              </ul>
+            <div class="settlement-summary">
+              <div class="card"><strong>本周期可确认业务量与金额</strong><span>基于已确认清结订单的内部管理预判</span></div>
+              <div class="card"><strong>已结算部分</strong><span>与正式结算、开票状态持续关联</span></div>
+              <div class="card"><strong>待下期结算部分</strong><span>识别结算滞后与状态差异，保留复核入口</span></div>
             </div>
-            <div class="value-highlight" style="border-left-color: #ff6b7a;">⚠️
-              <strong>异常分类</strong>：基础信息异常<br><strong>处置机制</strong>：系统自动拦截并触发数据补全流程，重大异常升级至风控专岗。
+
+            <div class="value-highlight">👉 <strong>口径说明</strong>：提前感知结果用于内部经营跟踪，不替代财务正式结算和收入确认；最终结果以正式结算、开票及财务口径为准。
             </div>
           </div>
         </div>
 
-        <!-- Panel 6: 履约与时间异常 -->
-        <div class="scenario-content-panel" id="scenario-6">
-          <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(230,57,70,0.12);color:#ff6b7a;font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景二 · 异常分析</div>
-            <h3>履约过程与时间异常</h3>
-            <div class="scenario-intro">针对履约时效与时间逻辑进行智能监测。</div>
-            <div class="sub-section">
-              <ul>
-                <li><strong>支付处理超时</strong>：支付从发起到完成的时间超出业务合理阈值（如>72小时），可能存在支付通道异常或人工干预延迟。</li>
-                <li><strong>集装箱处理周期过长</strong>：箱体在港停留时间、堆存时间异常偏长，与同类业务均值偏差显著。</li>
-                <li><strong>支付-履约时序倒挂</strong>：履约作业完成时间早于支付完成时间（先干活后收钱），存在坏账风险。</li>
-                <li><strong>履约节点缺失/延迟</strong>：关键节点（如提箱确认、船期绑定、到港确认）缺失或延迟超出SLA。</li>
-              </ul>
-            </div>
-            <div class="value-highlight" style="border-left-color: var(--sunset-orange);">⏱️ <strong>异常分类</strong>：履约异常
-              / 时间异常<br><strong>处置机制</strong>：系统按时效阈值自动预警，超时工单自动升级。</div>
-          </div>
-        </div>
-
-        <!-- Panel 7: 业务规则异常 -->
-        <div class="scenario-content-panel" id="scenario-7">
-          <div class="card scenario-card-inner">
-            <div
-              style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(230,57,70,0.12);color:#ff6b7a;font-size:12px;font-weight:600;margin-bottom:16px;">
-              场景二 · 异常分析</div>
-            <h3>业务记录与规则异常</h3>
-            <div class="scenario-intro">针对业务执行完整性与规则合规性进行综合核查。</div>
-            <div class="sub-section">
-              <ul>
-                <li><strong>订单关键记录缺失</strong>：操作日志不完整、关键状态变更无操作人记录、审批流程缺失。</li>
-                <li><strong>执行与记录不一致</strong>：实际作业已完成但系统记录仍停留在中间状态，或系统已标记完成但实际未执行。</li>
-                <li><strong>费用/记录信息异常</strong>：费用项与业务类型不匹配、同一订单出现重复收费记录、费率与合同约定不一致。</li>
-                <li><strong>业务链路无法还原</strong>：因多处记录缺失或矛盾，导致订单从创建到完成的业务链路无法完整重建。</li>
-              </ul>
-            </div>
-            <div class="value-highlight" style="border-left-color: var(--sunset-orange);">📋
-              <strong>异常分类</strong>：综合业务异常<br><strong>处置机制</strong>：系统自动生成异常归档报告，纳入月度经营分析复盘，重大问题触发专项审计工单。
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- Section: Overall Goals -->
+  <!-- Section: Exception Fulfillment & Orders -->
   <section class="section" id="data-asset">
     <div class="section-header reveal">
-      <div class="section-label">PART 10</div>
-      <h2 class="section-title">整体目标与落地场景</h2>
-      <p class="section-desc">围绕履约中心与数据资产池一体化建设，形成运营、决策、服务、考核的整体目标</p>
+      <div class="section-label">PART 10 </div>
+      <h2 class="section-title">应用场景建设｜异常履约与异常订单</h2>
+      <p class="section-desc">统一规则口径 · 输出可核查清单 · 交由履约中心或既有流程闭环</p>
     </div>
 
-    <div class="goals-grid reveal">
-      <!-- Goal 1 -->
-      <div class="card goal-card" onclick="toggleGoal(this)">
-        <span class="goal-number">01</span>
-        <div class="goal-icon">🔭</div>
-        <h3>运营监控</h3>
-        <div class="goal-subtitle">全局洞察，主动干预</div>
-        <div class="goal-toggle">展开详情 <span>→</span></div>
-        <div class="goal-details">
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>全链路运营监控中心</strong>：对订单状态、费用生成、支付流转及履约异常进行统一监控。</span></div>
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>履约异常主动预警</strong>：围绕超期堆存、状态回传、费用支付、接口失败等风险点提前识别。</span></div>
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>工单自动触发</strong>：监控发现异常后自动生成工单并分派责任岗位，推动问题闭环。</span>
-          </div>
-        </div>
+    <div class="card scenario-card-inner reveal">
+      <div class="scene-tag">规则识别 → 辅助核查 → 业务闭环</div>
+      <h3>异常不是一个提示点，而是一条可追溯的处置链</h3>
+      <div class="scenario-intro">数据中心统一执行规则、保留发现批次和节点快照，输出异常清单、标签、差异及核查口径；业务处置仍由履约中心或既有流程承接。</div>
+
+      <div class="exception-flow" aria-label="异常识别与处置链路">
+        <div class="exception-step"><b>规则检测</b><span>质量、状态、时序、金额</span></div><span class="flow-chevron">→</span>
+        <div class="exception-step"><b>异常清单</b><span>来源系统、批次、业务对象</span></div><span class="flow-chevron">→</span>
+        <div class="exception-step"><b>规则标注</b><span>规则编号、异常标签、等级</span></div><span class="flow-chevron">→</span>
+        <div class="exception-step"><b>辅助核查</b><span>差异来源、节点快照、建议</span></div><span class="flow-chevron">→</span>
+        <div class="exception-step"><b>业务闭环</b><span>履约中心 / 既有流程处理</span></div>
       </div>
 
-      <!-- Goal 2 -->
-      <div class="card goal-card" onclick="toggleGoal(this)">
-        <span class="goal-number">02</span>
-        <div class="goal-icon">🧠</div>
-        <h3>数据决策</h3>
-        <div class="goal-subtitle">数据可信，口径统一</div>
-        <div class="goal-toggle">展开详情 <span>→</span></div>
-        <div class="goal-details">
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>统一数据底座</strong>：沉淀合同、订单、箱号、费用、支付、履约节点、工单等核心数据。</span></div>
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>规则与快照支撑</strong>：通过质量规则、每日快照和血缘追溯提升数据可信度。</span>
-          </div>
-          <div class="goal-detail-item"><span class="dot"></span><span><strong>经营分析复用</strong>：为经营分析、业财融合、风险预警和后续 AI
-              场景提供统一数据服务。</span></div>
-        </div>
-      </div>
+      <table class="risk-table exception-matrix">
+        <thead>
+          <tr>
+            <th>异常类型</th>
+            <th>规则口径</th>
+            <th>输出结果</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>字段质量异常</td>
+            <td>客户主体、合同号、订单金额、支付时间、箱号 / 计划号、业务来源、签章状态、客服工单号等关键字段为空、重复或格式不规范。</td>
+            <td>字段缺失清单、重复记录、来源系统、发现批次</td>
+          </tr>
+          <tr>
+            <td>支付状态异常</td>
+            <td>支付成功但缺少流水，支付失败但业务已放行，退款 / 补缴状态与订单状态不一致。</td>
+            <td>状态冲突清单、异常标签、规则编号</td>
+          </tr>
+          <tr>
+            <td>履约节点异常</td>
+            <td>关键节点超时、流程跳转不符合规则、合同状态与订单状态不一致、履约结果未回传。</td>
+            <td>履约预警清单、处置建议、节点快照</td>
+          </tr>
+          <tr>
+            <td>金额与流水异常</td>
+            <td>订单应收、实收、退款、补缴、减免、发票金额与流水、渠道记录不一致。</td>
+            <td>金额差异清单、差异金额、来源和核查口径</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <!-- Goal 3 -->
-      <div class="card goal-card" onclick="toggleGoal(this)">
-        <span class="goal-number">03</span>
-        <div class="goal-icon">💎</div>
-        <h3>客户服务</h3>
-        <div class="goal-subtitle">进度透明，响应提速</div>
-        <div class="goal-toggle">展开详情 <span>→</span></div>
-        <div class="goal-details">
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>业务状态透明</strong>：客户可查询合同、订单、箱货状态、费用明细和履约进度。</span>
-          </div>
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>问题定位提速</strong>：客服和业务人员基于订单号、箱号、计划号快速定位问题节点。</span>
-          </div>
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>客户分层运营</strong>：后续基于客户价值、风险等级和服务诉求形成差异化服务策略。</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Goal 4 -->
-      <div class="card goal-card" onclick="toggleGoal(this)">
-        <span class="goal-number">04</span>
-        <div class="goal-icon">📈</div>
-        <h3>动态考核</h3>
-        <div class="goal-subtitle">客观透明，效能驱动</div>
-        <div class="goal-toggle">展开详情 <span>→</span></div>
-        <div class="goal-details">
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>过程数据采集</strong>：自动沉淀响应及时率、履约准时率、异常处置时效等过程指标。</span></div>
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>责任链条清晰</strong>：基于工单流转、操作日志和结项结果识别责任节点与处理质量。</span></div>
-          <div class="goal-detail-item"><span
-              class="dot"></span><span><strong>持续优化闭环</strong>：形成“考核-分析-改进-复盘”的管理闭环，推动运营效率提升。</span></div>
-        </div>
+      <div class="exception-note-grid">
+        <div class="exception-note"><strong>规则治理要求：</strong>异常阈值、强弱规则、启停时间和责任人需经业务确认；规则变化保留版本记录，避免口径漂移。</div>
+        <div class="exception-note"><strong>处置闭环要求：</strong>系统提供工单建议但不替代业务判断；处理人、处理时间、原因分类和复核结果需要结构化留痕。</div>
       </div>
     </div>
+  </section>
+
+  <!-- Section: Data Products, Continuous Operations & Joint Management -->
+  <section class="section" id="joint-mgmt">
+    <div class="section-header reveal">
+      <div class="section-label">PART 11 </div>
+      <h2 class="section-title">数据产品与持续运营</h2>
+      <p class="section-desc">先满足内部经营管理 · 再沉淀复用服务 · 通过联合管理保持场景持续生长</p>
+    </div>
+
+    <div class="horizon-grid reveal">
+      <article class="card horizon-card">
+        <span class="horizon-label">近期 · 先验证内部价值</span>
+        <h3>进口业务闭环与运营复盘</h3>
+        <ul>
+          <li>进口订单全链路跟踪与支付核验</li>
+          <li>运营商务确认账单与清结订单台账</li>
+          <li>结算 / 发票比对、异常清单和每日快照</li>
+          <li>逐步支撑内部考核与运营复盘口径</li>
+        </ul>
+      </article>
+      <article class="card horizon-card">
+        <span class="horizon-label">中远期 · 按条件扩围</span>
+        <h3>数据产品与跨场景复用</h3>
+        <ul>
+          <li>扩展出口、散杂货、物流等业务场景</li>
+          <li>沉淀全链路查询、对账核验等标准服务</li>
+          <li>形成客户服务穿透视图和复用数据集</li>
+          <li>条件成熟后支撑客户侧与智能化应用</li>
+        </ul>
+      </article>
+      <article class="card horizon-card">
+        <span class="horizon-label">持续运营 · 建立上线节奏</span>
+        <h3>场景需求池持续迭代</h3>
+        <p>通过内部调研、小范围试运行和效果评估滚动上线新场景，避免一次性建设完成后场景停滞；日常同步关注数据质量、任务稳定性、服务使用和问题整改。</p>
+      </article>
+    </div>
+
+    <div class="operation-cycle reveal" aria-label="场景持续运营循环">
+      <div class="operation-step"><b>场景确认</b><span>价值、对象、口径</span></div><span class="flow-chevron">→</span>
+      <div class="operation-step"><b>数据准备</b><span>数据源、权限、质量</span></div><span class="flow-chevron">→</span>
+      <div class="operation-step"><b>规则配置</b><span>指标、阈值、责任</span></div><span class="flow-chevron">→</span>
+      <div class="operation-step"><b>试运行</b><span>小范围验证与修正</span></div><span class="flow-chevron">→</span>
+      <div class="operation-step"><b>验收上线</b><span>结果确认、正式发布</span></div><span class="flow-chevron">→</span>
+      <div class="operation-step"><b>运营优化</b><span>使用评价、问题复盘</span></div>
+    </div>
+
+    <div class="joint-mgmt-intro compact reveal">
+      <p><strong
+          style="color:var(--sunset-gold)">联合管理机制前置：</strong>后期数据产品及运营功能由甲方（港融）与乙方（远集金叶）联合管理。乙方输出治理规划、标准规范、技术方法和运营工具；甲方确认业务口径、协调数据资源并落实日常使用和整改；双方共同维护需求池、规则和运营节奏，推动项目由阶段性建设转向常态化数据治理及运营管理。
+      </p>
+    </div>
+
+    <div class="joint-mgmt-grid compact reveal">
+      <article class="card joint-mgmt-card">
+        <div class="jm-icon">🧭</div>
+        <span class="jm-role party-b">乙方 · 远集金叶</span>
+        <h4>治理规划与专业赋能</h4>
+        <ul>
+          <li>制定总体规划、数据标准和治理规范</li>
+          <li>提供平台、模型、质量规则与技术支撑</li>
+          <li>完成培训、知识转移和持续优化建议</li>
+        </ul>
+      </article>
+      <article class="card joint-mgmt-card">
+        <div class="jm-icon">🏗️</div>
+        <span class="jm-role party-a">甲方 · 港融</span>
+        <h4>标准落地与业务运营</h4>
+        <ul>
+          <li>确认权威源、业务规则和场景优先级</li>
+          <li>协调数据归集、接口环境与安全权限</li>
+          <li>负责日常使用、认责整改和效果评价</li>
+        </ul>
+      </article>
+      <article class="card joint-mgmt-card">
+        <div class="jm-icon">🤝</div>
+        <span class="jm-role joint">双方联合</span>
+        <h4>需求、质量与场景共运营</h4>
+        <ul>
+          <li>共同维护需求池、码表和指标口径</li>
+          <li>日巡检、周复盘、月度运营评估</li>
+          <li>新增数据源和场景统一评审后上线</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="value-highlight reveal">👉 <strong>运营目标</strong>：让数据中台与业务场景持续迭代不断档，并在标准、安全和投入产出可控的前提下逐步扩大服务范围。</div>
   </section>
 
   <!-- Section: Implementation Path -->
   <section class="section" id="roadmap">
     <div class="section-header reveal">
-      <div class="section-label">PART 11</div>
-      <h2 class="section-title">实施路径与演进规划</h2>
-      <p class="section-desc">打好底座、分步扩展</p>
+      <div class="section-label">PART 12 · 近期实施</div>
+      <h2 class="section-title">实施路径｜四阶段里程碑</h2>
+      <p class="section-desc">双主线协同推进 · 阶段成果清晰 · 年度目标可验收</p>
     </div>
 
-    <div class="phase-grid reveal">
-      <div class="card phase-card">
-        <div class="phase-tag">第一阶段 · 近期</div>
-        <h3>基建与规范期</h3>
-        <div class="phase-subtitle">建设大数据底座与数据治理规范，打通核心业务数据</div>
-        <ul class="phase-checklist">
-          <li><span class="check-icon">✓</span><span>建设大数据底座与数据治理规范</span></li>
-          <li><span class="check-icon">✓</span><span>打通核心业务数据链路</span></li>
-          <li><span class="check-icon">✓</span><span>上线"规则校验 + 运营监控 + 基础工单流转"</span></li>
-          <li><span class="check-icon">✓</span><span>率先实现计费收费、履约异常的工单闭环管理</span></li>
-          <li><span class="check-icon">✓</span><span>初步验证"主动管控"模式</span></li>
-        </ul>
+    <div class="implementation-strategy reveal" aria-label="两条建设主线">
+      <article class="card strategy-rail">
+        <span class="strategy-no">A</span>
+        <div>
+          <h3>履约中心与数据支撑先行</h3>
+          <p>先形成合同、订单、计费、履约、结算和异常闭环，保障核心业务流程可独立运行。</p>
+        </div>
+      </article>
+      <article class="card strategy-rail">
+        <span class="strategy-no">B</span>
+        <div>
+          <h3>数据治理与一期场景同步验证</h3>
+          <p>同步建设分层数仓和治理能力，以进口订单跟踪、支付核验及商务确认完成价值验证。</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="reveal">
+      <div class="milestone-heading">
+        <div>
+          <h3>📅 首年四阶段实施计划</h3>
+          <p>以关键成果划分建设阶段，点击里程碑可突出当前汇报重点</p>
+        </div>
+        <span class="milestone-hint">M1—M4 为建议基线，可随正式立项时间滚动调整</span>
       </div>
 
-      <div class="card phase-card">
-        <div class="phase-tag">第二阶段 · 远期</div>
-        <h3>智能与全面协同期</h3>
-        <div class="phase-subtitle">全面引入大模型与高级数据分析算法</div>
-        <ul class="phase-checklist">
-          <li><span class="check-icon">✦</span><span>全面引入大模型与高级数据分析算法</span></li>
-          <li><span class="check-icon">✦</span><span>全量推开智能合同审查</span></li>
-          <li><span class="check-icon">✦</span><span>上线履约仿真与智能客服</span></li>
-          <li><span class="check-icon">✦</span><span>客户价值运营与全域自动化考核</span></li>
-          <li><span class="check-icon">✦</span><span>实现"数据智能驱动"与"业务全域协同"</span></li>
-        </ul>
+      <div class="month-grid" aria-label="四阶段实施里程碑">
+        <article class="card month-card selected" data-stage="1" onclick="selectMilestone(this)" role="button"
+          tabindex="0" aria-pressed="true">
+          <div class="month-meta"><span class="month-no">M1</span><span class="month-stage">第 1—2 个月</span></div>
+          <h4>总体设计与实施基线</h4>
+          <p>完成业务与数据盘点、总体设计、标准与码表初版、接口规范、安全要求和项目基线。</p>
+          <div class="month-output"><strong>阶段成果：</strong>总体设计、范围及验收基线</div>
+        </article>
+        <article class="card month-card" data-stage="2" onclick="selectMilestone(this)" role="button" tabindex="0"
+          aria-pressed="false">
+          <div class="month-meta"><span class="month-no">M2</span><span class="month-stage">第 3—6 个月</span></div>
+          <h4>履约核心能力与重点数据接入</h4>
+          <p>完成履约中心核心功能、数据支撑层和重点接口建设，启动数据接入及质量规则试运行。</p>
+          <div class="month-output"><strong>阶段成果：</strong>履约核心能力可联调版本</div>
+        </article>
+        <article class="card month-card" data-stage="3" onclick="selectMilestone(this)" role="button" tabindex="0"
+          aria-pressed="false">
+          <div class="month-meta"><span class="month-no">M3</span><span class="month-stage">第 7—9 个月</span></div>
+          <h4>数据治理与一期场景验证</h4>
+          <p>完成分层模型、主数据、元数据、质量、安全、每日快照及进口专题数据服务建设。</p>
+          <div class="month-output"><strong>阶段成果：</strong>治理底座与进口场景验证版本</div>
+        </article>
+        <article class="card month-card" data-stage="4" onclick="selectMilestone(this)" role="button" tabindex="0"
+          aria-pressed="false">
+          <div class="month-meta"><span class="month-no">M4</span><span class="month-stage">第 10—12 个月</span></div>
+          <h4>联调上线、验收与运营移交</h4>
+          <p>完成一体化联调、用户验收、上线试运行、培训和运维移交，形成后续扩展计划。</p>
+          <div class="month-output"><strong>阶段成果：</strong>上线验收与运营移交材料</div>
+        </article>
+      </div>
+
+      <div class="roadmap-bridge">
+        <p><strong>实施原则：</strong>主数据、接口、标准与安全规则优先确认；具体工期结合资源到位、第三方接口和详细设计滚动确认。</p>
+        <span class="bridge-arrow">下一页 · 五年演进 →</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Five-year Strategic Outlook (under Implementation Path) -->
+  <section class="section" id="future-roadmap" data-nav-parent="roadmap">
+    <div class="section-header reveal">
+      <div class="section-label">PART 12 · 长期演进</div>
+      <h2 class="section-title">实施路径｜五年演进规划</h2>
+      <p class="section-desc">业务数据汇集 → 全域融合 → AI赋能 → 服务开放 → 商业变现</p>
+    </div>
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="card timeline-card">
+          <div class="timeline-year">第1年 · 业务数据汇集 + 链路透视</div>
+          <div class="timeline-title">全链路查看与异常发现</div>
+          <div class="timeline-desc">优先承接集装箱等核心业务数据。实现从业务订单到财务结算的数据全链路透明化，重点构建异常数据（如状态停滞、未执行退款等）的自动化发现机制，迈出数字化内管的第一步。
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="card timeline-card">
+          <div class="timeline-year">第2年 · 全域数据融合 + 量化考核</div>
+          <div class="timeline-title">全域接入与管理量化</div>
+          <div class="timeline-desc">
+            陆续接入港区各业务系统数据，构建统一数据资产池。围绕员工任务处理、异常闭环、处理时效等真实业务指标，建立量化分析与考核机制，推动内部管理由经验驱动向数据驱动转变；同时基于客户交易、业务频次、价值贡献等数据开展客户
+            RFM 模型分析，提升内部管理精细化水平和客户经营能力。</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="card timeline-card">
+          <div class="timeline-year">第3年 · AI赋能 + 高质量数据集</div>
+          <div class="timeline-title">精细化运营能力构建</div>
+          <div class="timeline-desc">
+            基于统一数据底座，完善异常识别、任务分派、责任追踪、处理留痕和绩效分析能力。重点解决人员执行效率、业务协同和问题闭环管理问题，形成可统计、可考核、可优化的内部运营管理体系；同时围绕业务趋势预测、异常风险识别、经营分析等场景，引入
+            AI 辅助分析能力，形成可复用的数据分析模型和高质量数据集，为管理决策、业务优化和智能应用提供支撑。</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="card timeline-card">
+          <div class="timeline-year">第4年 · 服务开放 + 数据赋能</div>
+          <div class="timeline-title">数据服务标准化与 API 输出</div>
+          <div class="timeline-desc">依托扎实的内控基座，将成熟的业务查询、全程时效追踪、车辆核验等能力封装为标准API，正式向船公司、货代、车队及口岸单位输出开放，实现从内部管理支撑向外部生态赋能转变。
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="card timeline-card">
+          <div class="timeline-year">第5年 · 模式升级 + 商业变现</div>
+          <div class="timeline-title">数据变现与生态运营</div>
+          <div class="timeline-desc">深度探索数据要素的市场化价值。通过企业高级数据订阅、产融风控协同（如信用数据对接供应链金融）等手段，实现数据资产的直接商业变现，并跨港区复制“港融模式”。</div>
+        </div>
       </div>
     </div>
 
-    <div class="reveal" style="margin-top: 56px;">
-      <h3 style="font-size: 22px; margin-bottom: 32px; text-align: center;">📅 五年发展路线图</h3>
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="card timeline-card">
-            <div class="timeline-year">第1年 · 业务数据汇集 + 链路透视</div>
-            <div class="timeline-title">全链路查看与异常发现</div>
-            <div class="timeline-desc">优先承接集装箱等核心业务数据。实现从业务订单到财务结算的数据全链路透明化，重点构建异常数据（如状态停滞、未执行退款等）的自动化发现机制，迈出数字化内管的第一步。
-            </div>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="card timeline-card">
-            <div class="timeline-year">第2年 · 全域数据融合 + 量化考核</div>
-            <div class="timeline-title">全域接入与管理量化</div>
-            <div class="timeline-desc">
-              陆续接入港区各业务系统数据，构建统一数据资产池。围绕员工任务处理、异常闭环、处理时效等真实业务指标，建立量化分析与考核机制，推动内部管理由经验驱动向数据驱动转变；同时基于客户交易、业务频次、价值贡献等数据开展客户
-              RFM 模型分析，提升内部管理精细化水平和客户经营能力。
-            </div>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="card timeline-card">
-            <div class="timeline-year">第3年 · AI赋能 + 高质量数据集</div>
-            <div class="timeline-title">精细化运营能力构建</div>
-            <div class="timeline-desc">
-              基于统一数据底座，完善异常识别、任务分派、责任追踪、处理留痕和绩效分析能力。重点解决人员执行效率、业务协同和问题闭环管理问题，形成可统计、可考核、可优化的内部运营管理体系；同时围绕业务趋势预测、异常风险识别、经营分析等场景，引入
-              AI 辅助分析能力，形成可复用的数据分析模型和高质量数据集，为管理决策、业务优化和智能应用提供支撑。
-            </div>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="card timeline-card">
-            <div class="timeline-year">第4年 · 服务开放 + 数据赋能</div>
-            <div class="timeline-title">数据服务标准化与 API 输出</div>
-            <div class="timeline-desc">
-              依托扎实的内控基座，将成熟的业务查询、全程时效追踪、车辆核验等能力封装为标准API，正式向船公司、货代、车队及口岸单位输出开放，实现从内部管理支撑向外部生态赋能转变。</div>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="card timeline-card">
-            <div class="timeline-year">第5年 · 模式升级 + 商业变现</div>
-            <div class="timeline-title">数据变现与生态运营</div>
-            <div class="timeline-desc">深度探索数据要素的市场化价值。通过企业高级数据订阅、产融风控协同（如信用数据对接供应链金融）等手段，实现数据资产的直接商业变现，并跨港区复制“港融模式”。
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="value-highlight reveal" style="margin-top: 28px;">👉 <strong>规划边界</strong>：第 1 年以 M1—M4
+      实施与验收基线为准；第 2—5 年属于战略演进方向，年度范围需结合业务优先级、数据源条件、资源投入和阶段评估滚动确认。</div>
   </section>
 
   <!-- Section: Value Summary -->
   <section class="section" id="value">
     <div class="section-header reveal">
-      <div class="section-label">PART 12</div>
+      <div class="section-label">PART 13</div>
       <h2 class="section-title">项目综合价值</h2>
-      <p class="section-desc">多维度价值体现，推动港融数字化转型</p>
+      <p class="section-desc">价值先落在业务可用、数据可信和管理可持续，再为后续场景扩展提供基础</p>
     </div>
 
     <div class="value-grid reveal">
       <div class="card value-card">
-        <span class="v-icon">🏛️</span>
-        <h4>政策与战略价值</h4>
-        <p>承接数字经济、数据要素、智慧港口、国企数字化转型方向</p>
+        <span class="v-icon">🔗</span>
+        <h4>业务闭环价值</h4>
+        <p>实现协议合同、订单、执行、结算、异常与归档的端到端闭环</p>
       </div>
       <div class="card value-card">
         <span class="v-icon">📊</span>
-        <h4>经营管理价值</h4>
-        <p>统一核心口径，提升订单、费用、支付等关键环节透明度</p>
+        <h4>管理可视价值</h4>
+        <p>订单、费用、支付、作业、结算和开票关键状态可穿透查询</p>
       </div>
       <div class="card value-card">
-        <span class="v-icon">💰</span>
-        <h4>商业变现价值</h4>
-        <p>API、订阅服务、预警服务、专题报告，探索长期增值收入</p>
+        <span class="v-icon">✅</span>
+        <h4>履约管理价值</h4>
+        <p>合同规范、进度透明、计费可核、异常处置有责任和时限</p>
       </div>
       <div class="card value-card">
         <span class="v-icon">👥</span>
         <h4>客户服务价值</h4>
-        <p>透明获取订单进度、箱货状态，减少人工查询和对账争议</p>
+        <p>客户可查询合同、履约进度、费用与异常结果，减少人工沟通</p>
       </div>
       <div class="card value-card">
-        <span class="v-icon">🤖</span>
-        <h4>AI基础价值</h4>
-        <p>智能问数、作业预测、异常检测、客户画像的高质量数据基础</p>
+        <span class="v-icon">🧱</span>
+        <h4>数据治理价值</h4>
+        <p>统一标准、主数据、质量、血缘和快照，让数据可信、可溯、可复用</p>
       </div>
       <div class="card value-card">
         <span class="v-icon">🔒</span>
-        <h4>合规安全价值</h4>
-        <p>分类分级、授权、脱敏、出域审批，降低数据泄露风险</p>
-      </div>
-      <div class="card value-card">
-        <span class="v-icon">🌐</span>
-        <h4>产业生态价值</h4>
-        <p>打通港口、货主、货代、船公司、车队、金融机构的数据协同</p>
-      </div>
-      <div class="card value-card">
-        <span class="v-icon">📦</span>
-        <h4>数据资产价值</h4>
-        <p>可盘点、可治理、可复用、可评估、可运营的数据资产</p>
-      </div>
-      <div class="card value-card">
-        <span class="v-icon">🏆</span>
-        <h4>品牌与示范价值</h4>
-        <p>港口数据资产化、本地化数据服务的行业样板</p>
+        <h4>运营与安全价值</h4>
+        <p>通过权限、脱敏、审计和日周月机制保障平台稳定、合规运行</p>
       </div>
     </div>
 
     <!-- Leader Summary Banner -->
     <div class="summary-banner reveal" style="margin-top: 64px;">
-      <h2>以"工单和数据"为双轮驱动</h2>
-      <p>本方案以<strong style="color:var(--harbor-light)">"工单闭环 + 数据治理"</strong>为双轮驱动，完全契合<strong
-          style="color:var(--sunset-gold)">"全面提升平台运营能力、向主动管控转型"</strong>的核心诉求。通过构建坚实的数据底座，分步推进智能化能力，最终实现<strong
-          style="color:var(--success-green)">降本增效、风险可控、服务升级、资产变现</strong>的战略目标。</p>
+      <h2>以“业务闭环 + 可信数据”形成持续运营能力</h2>
+      <p>履约中心把合同、订单、计费、结算和异常处理在线化；运营管理数据中心把过程数据标准化、质量化、资产化。两条主线协同后，形成<strong
+          style="color:var(--success-green)">过程可视、口径统一、异常可定位、确认可留痕、结算可对照、能力可复用</strong>的运营基础。</p>
       <div class="summary-keywords">
-        <span class="keyword-chip">📊 数据驱动</span>
-        <span class="keyword-chip">🛡️ 风险预判</span>
-        <span class="keyword-chip">🤝 业务协同</span>
-        <span class="keyword-chip">💡 AI赋能</span>
-        <span class="keyword-chip">🎯 主动管控</span>
+        <span class="keyword-chip">🔗 业务闭环</span>
+        <span class="keyword-chip">🧱 可信底座</span>
+        <span class="keyword-chip">✅ 场景验证</span>
+        <span class="keyword-chip">♻️ 持续运营</span>
+        <span class="keyword-chip">🛡️ 安全可控</span>
       </div>
     </div>
+
   </section>
 
   <!-- Footer -->
@@ -3531,8 +5269,10 @@
   </footer>
 
   <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <img id="lightboxImg" src="" alt="放大查看">
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="图片放大查看" onclick="closeLightbox()">
+    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="关闭图片"
+      onclick="event.stopPropagation(); closeLightbox()">×</button>
+    <img id="lightboxImg" src="" alt="放大查看" onclick="event.stopPropagation()">
   </div>
 
   <script>
@@ -3550,167 +5290,440 @@
       }
     })();
 
-    // ========== Nav Scroll ==========
+    // ========== Page State & Navigation ==========
     const nav = document.getElementById('mainNav');
-    const navLinks = document.querySelectorAll('.nav-links a');
-    const sections = document.querySelectorAll('.section, .hero');
-
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 50);
-
-      // Active link
-      let current = '';
-      sections.forEach(s => {
-        if (window.scrollY >= s.offsetTop - 200) {
-          current = s.id;
-        }
-      });
-      navLinks.forEach(a => {
-        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-      });
+    const navLinks = Array.from(document.querySelectorAll('.nav-links a'));
+    const sections = Array.from(document.querySelectorAll('section.hero, section.section'));
+    const pagePrev = document.getElementById('pagePrev');
+    const pageNext = document.getElementById('pageNext');
+    const pageCount = document.getElementById('pageCount');
+    const pageTitle = document.getElementById('pageTitle');
+    const readingProgress = document.getElementById('readingProgress');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const presentationParams = new URLSearchParams(window.location.search);
+    const audienceMode = presentationParams.get('present') === 'audience';
+    const presentationSyncKey = 'yk-presentation-sync-v1';
+    const presentationChannel = 'BroadcastChannel' in window ? new BroadcastChannel('yk-presentation-v1') : null;
+    const audienceFullscreen = document.getElementById('audienceFullscreen');
+    const pageNames = sections.map(section => {
+      if (section.id === 'hero') return '方案总览';
+      const heading = section.querySelector('.section-title');
+      return heading ? heading.textContent.trim() : section.id;
     });
+    let currentPageIndex = 0;
+    let pagingLock = false;
+    let pagingUnlockTimer = 0;
+    let scrollFrame = 0;
+    let lastPublishedPage = -1;
 
-    // ========== Scroll Reveal ==========
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    if (audienceMode) document.body.classList.add('audience-mode');
 
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // ========== Counter Animation ==========
-    const counterObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const el = entry.target;
-          const target = parseInt(el.dataset.count);
-          let current = 0;
-          const increment = target / 40;
-          const timer = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-              el.textContent = target;
-              clearInterval(timer);
-            } else {
-              el.textContent = Math.ceil(current);
-            }
-          }, 30);
-          counterObserver.unobserve(el);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
-
-    // ========== Goal Cards Toggle ==========
-    function toggleGoal(card) {
-      const wasExpanded = card.classList.contains('expanded');
-      // Close all
-      document.querySelectorAll('.goal-card').forEach(c => {
-        c.classList.remove('expanded');
-        c.querySelector('.goal-toggle').innerHTML = '展开详情 <span>→</span>';
-      });
-      // Toggle clicked
-      if (!wasExpanded) {
-        card.classList.add('expanded');
-        card.querySelector('.goal-toggle').innerHTML = '收起详情 <span>↑</span>';
+    function sendPresentationMessage(payload) {
+      const message = { ...payload, source: 'audience', sentAt: Date.now(), nonce: Math.random() };
+      if (presentationChannel) presentationChannel.postMessage(message);
+      try {
+        window.localStorage.setItem(presentationSyncKey, JSON.stringify(message));
+      } catch (error) {
+        // BroadcastChannel remains the primary sync path when storage is unavailable.
       }
     }
 
-    // ========== Flow Tabs ==========
-    function switchFlow(index) {
-      document.querySelectorAll('.flow-tab').forEach((t, i) => t.classList.toggle('active', i === index));
-      document.querySelectorAll('.flow-panel').forEach((p, i) => {
-        p.classList.remove('active');
-        if (i === index) {
-          // Re-trigger animation
-          void p.offsetWidth;
-          p.classList.add('active');
-        }
+    function publishPresentationState(force = false) {
+      if (!audienceMode) return;
+      if (!force && lastPublishedPage === currentPageIndex) return;
+      lastPublishedPage = currentPageIndex;
+      sendPresentationMessage({
+        type: 'state',
+        index: currentPageIndex,
+        total: sections.length,
+        title: pageNames[currentPageIndex]
       });
     }
 
-    // ========== Scenario Tabs ==========
-    function switchScenario(index) {
-      document.querySelectorAll('.scenario-nav-item').forEach((n, i) => n.classList.toggle('active', i === index));
-      document.querySelectorAll('.scenario-content-panel').forEach((p, i) => {
-        p.classList.remove('active');
-        if (i === index) {
-          void p.offsetWidth;
-          p.classList.add('active');
+    function handlePresentationMessage(message) {
+      if (!audienceMode) return;
+      if (!message || message.source !== 'presenter') return;
+      if (message.type === 'request-state') {
+        publishPresentationState(true);
+        return;
+      }
+      if (message.type === 'navigate' && Number.isInteger(message.index)) {
+        const requestedIndex = Math.max(0, Math.min(sections.length - 1, message.index));
+        if (requestedIndex === currentPageIndex) publishPresentationState(true);
+        else goToPage(requestedIndex, true);
+      }
+    }
+
+    if (presentationChannel) {
+      presentationChannel.addEventListener('message', event => handlePresentationMessage(event.data));
+    }
+
+    window.addEventListener('storage', event => {
+      if (event.key !== presentationSyncKey || !event.newValue) return;
+      try {
+        handlePresentationMessage(JSON.parse(event.newValue));
+      } catch (error) {
+        // Ignore malformed cross-window messages.
+      }
+    });
+
+    if (audienceFullscreen) {
+      audienceFullscreen.addEventListener('click', async () => {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          try {
+            await document.documentElement.requestFullscreen();
+          } catch (error) {
+            // The browser may reject fullscreen when the window is not active.
+          }
         }
       });
+      document.addEventListener('fullscreenchange', () => {
+        document.body.classList.toggle('is-fullscreen', Boolean(document.fullscreenElement));
+      });
     }
-
-    // ========== Lightbox ==========
-    function openLightbox(src) {
-      document.getElementById('lightboxImg').src = src;
-      document.getElementById('lightbox').classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('show');
-      document.body.style.overflow = '';
-    }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-
-    // ========== Keyboard Section Paging ==========
-    let keyboardPagingLock = false;
 
     function getCurrentSectionIndex() {
-      const viewportAnchor = window.scrollY + window.innerHeight * 0.35;
+      const viewportAnchor = window.scrollY + window.innerHeight * 0.42;
       let index = 0;
       sections.forEach((section, i) => {
-        if (viewportAnchor >= section.offsetTop) {
-          index = i;
-        }
+        if (viewportAnchor >= section.offsetTop) index = i;
       });
       return index;
     }
 
-    function pageToSection(direction) {
-      if (keyboardPagingLock) return;
-      const currentIndex = getCurrentSectionIndex();
-      const nextIndex = Math.max(0, Math.min(sections.length - 1, currentIndex + direction));
-      if (nextIndex === currentIndex) return;
+    function updatePageUI(index) {
+      currentPageIndex = Math.max(0, Math.min(sections.length - 1, index));
+      pageCount.textContent = `${String(currentPageIndex + 1).padStart(2, '0')} / ${String(sections.length).padStart(2, '0')}`;
+      pageTitle.textContent = pageNames[currentPageIndex];
+      pagePrev.disabled = currentPageIndex === 0;
+      pageNext.disabled = currentPageIndex === sections.length - 1;
 
-      keyboardPagingLock = true;
-      sections[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.setTimeout(() => {
-        keyboardPagingLock = false;
-      }, 520);
+      const currentSection = sections[currentPageIndex];
+      const currentId = currentSection.dataset.navParent || currentSection.id;
+      navLinks.forEach(link => {
+        const active = link.getAttribute('href') === `#${currentId}`;
+        link.classList.toggle('active', active);
+        if (active) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      publishPresentationState();
     }
 
-    document.addEventListener('keydown', e => {
-      const target = e.target;
-      const isEditing = target && target.closest && target.closest('input, textarea, select, button, a, [contenteditable="true"]');
-      const lightboxOpen = document.getElementById('lightbox').classList.contains('show');
-      if (isEditing || lightboxOpen) return;
+    function updateScrollState() {
+      scrollFrame = 0;
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+      const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      readingProgress.style.transform = `scaleX(${Math.min(1, Math.max(0, window.scrollY / scrollable))})`;
+      updatePageUI(getCurrentSectionIndex());
+    }
 
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        pageToSection(1);
+    window.addEventListener('scroll', () => {
+      if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateScrollState);
+    }, { passive: true });
+
+    function goToPage(index, force = false) {
+      const nextIndex = Math.max(0, Math.min(sections.length - 1, index));
+      if ((!force && pagingLock) || nextIndex === currentPageIndex) return;
+
+      window.clearTimeout(pagingUnlockTimer);
+      pagingLock = true;
+      const targetSection = sections[nextIndex];
+      updatePageUI(nextIndex);
+      targetSection.classList.remove('section-focus');
+      void targetSection.offsetWidth;
+      targetSection.classList.add('section-focus');
+      targetSection.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+
+      pagingUnlockTimer = window.setTimeout(() => {
+        pagingLock = false;
+        targetSection.classList.remove('section-focus');
+        updatePageUI(getCurrentSectionIndex());
+      }, reduceMotion ? 40 : 680);
+    }
+
+    function pageToSection(direction) {
+      goToPage(currentPageIndex + direction);
+    }
+
+    pagePrev.addEventListener('click', () => pageToSection(-1));
+    pageNext.addEventListener('click', () => pageToSection(1));
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        const targetIndex = sections.findIndex(section => `#${section.id}` === link.getAttribute('href'));
+        if (targetIndex >= 0) goToPage(targetIndex);
+      });
+    });
+
+    // ========== Scroll Reveal ==========
+    const revealItems = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      revealItems.forEach(element => observer.observe(element));
+    } else {
+      revealItems.forEach(element => element.classList.add('visible'));
+    }
+
+    // ========== Counter Animation ==========
+    function animateCounter(element) {
+      const target = Number.parseInt(element.dataset.count, 10) || 0;
+      if (reduceMotion) {
+        element.textContent = target;
+        return;
+      }
+      let current = 0;
+      const increment = Math.max(0.25, target / 36);
+      const timer = window.setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          element.textContent = target;
+          window.clearInterval(timer);
+        } else {
+          element.textContent = Math.ceil(current);
+        }
+      }, 30);
+    }
+
+    const counterItems = document.querySelectorAll('[data-count]');
+    if ('IntersectionObserver' in window) {
+      const counterObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          animateCounter(entry.target);
+          counterObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.5 });
+      counterItems.forEach(element => counterObserver.observe(element));
+    } else {
+      counterItems.forEach(animateCounter);
+    }
+
+    // ========== Expandable Goal Cards ==========
+    function toggleGoal(card) {
+      const wasExpanded = card.classList.contains('expanded');
+      document.querySelectorAll('.goal-card').forEach(candidate => {
+        candidate.classList.remove('expanded');
+        candidate.setAttribute('aria-expanded', 'false');
+        candidate.querySelector('.goal-toggle').innerHTML = '展开详情 <span>→</span>';
+      });
+      if (!wasExpanded) {
+        card.classList.add('expanded');
+        card.setAttribute('aria-expanded', 'true');
+        card.querySelector('.goal-toggle').innerHTML = '收起详情 <span>↑</span>';
+      }
+    }
+
+    document.querySelectorAll('.goal-card').forEach(card => {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-expanded', 'false');
+      card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggleGoal(card);
+        }
+      });
+    });
+
+    // ========== Monthly Milestone Selection ==========
+    function selectMilestone(card) {
+      document.querySelectorAll('.month-card').forEach(candidate => {
+        const selected = candidate === card;
+        candidate.classList.toggle('selected', selected);
+        candidate.setAttribute('aria-pressed', String(selected));
+      });
+    }
+
+    document.querySelectorAll('.month-card').forEach(card => {
+      card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          selectMilestone(card);
+        }
+      });
+    });
+
+    // ========== Flow Tabs ==========
+    function switchFlow(index) {
+      document.querySelectorAll('.flow-tab').forEach((tab, i) => {
+        const active = i === index;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('.flow-panel').forEach((panel, i) => {
+        const active = i === index;
+        panel.classList.toggle('active', active);
+        panel.setAttribute('aria-hidden', String(!active));
+        if (active) void panel.offsetWidth;
+      });
+    }
+
+    const flowTabs = document.querySelectorAll('.flow-tab');
+    const flowTabList = document.querySelector('.flow-tabs');
+    if (flowTabList) flowTabList.setAttribute('role', 'tablist');
+    flowTabs.forEach((tab, index) => {
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('tabindex', '0');
+      tab.setAttribute('aria-selected', String(index === 0));
+      tab.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          switchFlow(index);
+        }
+      });
+    });
+
+    // ========== Scenario Tabs ==========
+    function switchScenario(index) {
+      document.querySelectorAll('.scenario-nav-item').forEach((item, i) => {
+        const active = i === index;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('.scenario-content-panel').forEach((panel, i) => {
+        const active = i === index;
+        panel.classList.toggle('active', active);
+        panel.setAttribute('aria-hidden', String(!active));
+        if (active) void panel.offsetWidth;
+      });
+    }
+
+    const scenarioItems = document.querySelectorAll('.scenario-nav-item');
+    const scenarioNav = document.querySelector('.scenario-nav');
+    if (scenarioNav) scenarioNav.setAttribute('role', 'tablist');
+    scenarioItems.forEach((item, index) => {
+      item.setAttribute('role', 'tab');
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('aria-selected', String(index === 0));
+      item.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          switchScenario(index);
+        }
+      });
+    });
+
+    // ========== Lightbox ==========
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImg');
+    const lightboxClose = document.getElementById('lightboxClose');
+    let focusBeforeLightbox = null;
+
+    function openLightbox(src) {
+      focusBeforeLightbox = document.activeElement;
+      lightboxImage.src = src;
+      lightbox.classList.add('show');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      lightboxClose.focus();
+    }
+
+    function closeLightbox() {
+      if (!lightbox.classList.contains('show')) return;
+      lightbox.classList.remove('show');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (focusBeforeLightbox && focusBeforeLightbox.focus) focusBeforeLightbox.focus();
+    }
+
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.querySelectorAll('.flow-image-wrapper, .arch-image-main').forEach(wrapper => {
+      const image = wrapper.querySelector('img');
+      wrapper.setAttribute('role', 'button');
+      wrapper.setAttribute('tabindex', '0');
+      wrapper.setAttribute('aria-label', image ? `${image.alt}，点击放大` : '点击放大图片');
+      wrapper.addEventListener('keydown', event => {
+        if ((event.key === 'Enter' || event.key === ' ') && image) {
+          event.preventDefault();
+          openLightbox(image.src);
+        }
+      });
+    });
+
+    // ========== Guaranteed Arrow-key Paging ==========
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        closeLightbox();
+        return;
       }
 
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
+      const target = event.target;
+      const isEditing = target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]');
+      if (isEditing || lightbox.classList.contains('show')) return;
+
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        pageToSection(1);
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault();
         pageToSection(-1);
       }
     });
 
-    // ========== Smooth Nav Scrolling ==========
-    navLinks.forEach(a => {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        const target = document.querySelector(a.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // ========== Mouse Spotlight, Ripple & Selection Feedback ==========
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (finePointer && !reduceMotion) {
+      const cursorOrb = document.getElementById('cursorOrb');
+      const cursorRing = document.getElementById('cursorRing');
+      const actionSelector = 'a, button, .goal-card, .flow-tab, .scenario-nav-item, .flow-image-wrapper, .solution-layer';
+      const spotlightSelector = '.card, .solution-layer';
+
+      document.addEventListener('pointermove', event => {
+        document.body.classList.add('pointer-ready');
+        cursorOrb.style.transform = `translate3d(${event.clientX - 3.5}px, ${event.clientY - 3.5}px, 0)`;
+        cursorRing.style.transform = `translate3d(${event.clientX - 17}px, ${event.clientY - 17}px, 0)`;
+        document.body.classList.toggle('pointer-over-action', Boolean(event.target.closest(actionSelector)));
+
+        const spotlight = event.target.closest(spotlightSelector);
+        if (spotlight) {
+          const rect = spotlight.getBoundingClientRect();
+          spotlight.style.setProperty('--pointer-x', `${event.clientX - rect.left}px`);
+          spotlight.style.setProperty('--pointer-y', `${event.clientY - rect.top}px`);
         }
+      }, { passive: true });
+
+      document.addEventListener('pointerout', event => {
+        if (!event.relatedTarget) document.body.classList.remove('pointer-ready', 'pointer-over-action');
       });
+    }
+
+    document.addEventListener('click', event => {
+      const host = event.target.closest('.card, .flow-tab, .scenario-nav-item, .flow-image-wrapper, .solution-layer, .page-dock button');
+      if (!host) return;
+      const rect = host.getBoundingClientRect();
+      const clickX = event.clientX || rect.left + rect.width / 2;
+      const clickY = event.clientY || rect.top + rect.height / 2;
+      const ripple = document.createElement('span');
+      ripple.className = 'interaction-ripple';
+      ripple.style.left = `${clickX - rect.left}px`;
+      ripple.style.top = `${clickY - rect.top}px`;
+      host.appendChild(ripple);
+      window.setTimeout(() => ripple.remove(), 700);
     });
+
+    let selectionTimer = 0;
+    document.addEventListener('selectionchange', () => {
+      window.clearTimeout(selectionTimer);
+      selectionTimer = window.setTimeout(() => {
+        const selection = window.getSelection();
+        if (!selection || selection.isCollapsed || !selection.rangeCount) return;
+        const rect = selection.getRangeAt(0).getBoundingClientRect();
+        if (!rect.width && !rect.height) return;
+        const flare = document.createElement('span');
+        flare.className = 'selection-flare';
+        flare.style.left = `${rect.left + rect.width / 2}px`;
+        flare.style.top = `${rect.top + rect.height / 2}px`;
+        document.body.appendChild(flare);
+        window.setTimeout(() => flare.remove(), 850);
+      }, 80);
+    });
+
+    updateScrollState();
   </script>
 </body>
 
